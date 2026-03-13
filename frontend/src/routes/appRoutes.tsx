@@ -11,18 +11,23 @@ import Home from "../pages/home";
 // import ProtectedRoute from "./protectedRoute";
 function AppRoutes() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const checkAuth = async () => {
             try {
                 const res = await verifyUser();
+
                 if (res.status === 200) {
                     setIsAuthenticated(true);
                 }
             } catch {
                 setIsAuthenticated(false);
             }
+
+            setLoading(false);
         };
+
 
         checkAuth();
     }, []);
@@ -31,11 +36,16 @@ function AppRoutes() {
         console.log("Auth state changed:", isAuthenticated);
     }, [isAuthenticated]);
 
+    if (loading) return <div>Loading...</div>;
     return (
         <BrowserRouter>
 
             <Routes>
-                <Route path="/login" element={<Login />} />
+                <Route
+                    path="/login"
+                    element={isAuthenticated ? <Navigate to="/home" /> : <Login />}
+                />
+
                 <Route path="/signup" element={<Signup />} />
                 <Route
                     path="/home"
