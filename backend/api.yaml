@@ -1,0 +1,81 @@
+openapi: 3.0.0
+info:
+  title: Chat Application API
+  version: 1.0.0
+  description: API documentation for chat backend
+
+servers:
+  - url: http://localhost:5000
+    description: Local development server
+
+paths:
+  /health:
+    get:
+      summary: Health check
+      description: Returns a simple message to confirm the server is running.
+      responses:
+        '200':
+          description: Server is healthy
+          
+  /auth/login:
+    post:
+      summary: Login user
+      description: Authenticates a user and returns a JWT token in cookies.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - email
+                - password
+      responses:
+        '200':
+          description: Login successful
+        '401':
+          description: Unauthorized - Invalid credentials
+
+  /auth/register:
+    post:
+      summary: Register user
+      description: Creates a new user account.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '201':
+          description: User registered successfully
+        '400':
+          description: Bad request - Missing fields or email already registered
+
+  /auth/verify:
+    get:
+      summary: Verify user token
+      description: Checks if the JWT token stored in cookies is valid.
+      parameters:
+        - in: cookie
+          name: jwt
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Token is valid
+        '401':
+          description: Unauthorized - Invalid or missing token
