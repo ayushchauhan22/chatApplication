@@ -31,12 +31,9 @@ function AppRoutes() {
 
         checkAuth();
     }, []);
-
-    useEffect(() => {
-        console.log("Auth state changed:", isAuthenticated);
-    }, [isAuthenticated]);
-
+    
     if (loading) return <div>Loading...</div>;
+
     return (
         <BrowserRouter>
 
