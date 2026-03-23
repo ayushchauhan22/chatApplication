@@ -1,0 +1,62 @@
+@import "@fontsource-variable/geist";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  :root {
+    /* Custom Blue Palette */
+    --background: 255 50% 96%; /* #EDE8F5 */
+    --foreground: 225 25% 18%;
+    --card: 225 40% 85%; /* #ADBBDA */
+    --card-foreground: 225 25% 18%;
+    --popover: 225 40% 85%;
+    --popover-foreground: 225 25% 18%;
+    --primary: 225 45% 44%; /* #3D52A0 */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 225 40% 92%;
+    --secondary-foreground: 225 25% 18%;
+    --accent: 225 60% 70%; /* #7091E6 */
+    --accent-foreground: 225 25% 18%;
+    --muted: 225 30% 70%; /* #8697C4 */
+    --muted-foreground: 225 20% 45%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 225 20% 82%;
+    --input: 225 40% 97%;
+    --ring: 225 60% 70%;
+    --radius: 0.75rem;
+    --message-self: 225 45% 44%;
+    --message-self-fg: 0 0% 100%;
+    --message-other: 225 40% 92%;
+    --message-other-fg: 225 25% 18%;
+    --online:  220 70% 50%;
+    --offline: 225 30% 70%;
+    --error: 0 84% 60%;
+  }
+
+  .theme {
+    --font-sans: "Geist Variable", sans-serif;
+  }
+
+  html {
+    @apply font-sans;
+  }
+}
+
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
