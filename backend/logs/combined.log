@@ -6391,3 +6391,124 @@
 {"level":"info","message":"User 69c1257d84886c7a997de211 disconnected","timestamp":"2026-03-23T12:17:09.999Z"}
 {"level":"info","message":"User 69ba2346594eee63f6f41f84 disconnected","timestamp":"2026-03-23T12:17:10.030Z"}
 {"level":"info","message":"User 69ba2346594eee63f6f41f84 disconnected","timestamp":"2026-03-23T12:39:12.340Z"}
+{"level":"info","message":"Server is running on port 5000","timestamp":"2026-03-23T18:14:19.035Z"}
+{"level":"info","message":"Socket 3drTCMBfPdkGw-ziAAAC joined 69c129c5580a2b71a6815b1b","timestamp":"2026-03-23T18:16:44.169Z"}
+{"level":"info","message":"Socket 3drTCMBfPdkGw-ziAAAC joined 69c039e156c4130a0c136a9b","timestamp":"2026-03-23T18:16:46.256Z"}
+{"level":"info","message":"User 69ba2346594eee63f6f41f84 disconnected","timestamp":"2026-03-23T18:19:52.008Z"}
+{"level":"info","message":"Socket oRCaKIojIVIlp_AxAAAG joined 69c129c5580a2b71a6815b1b","timestamp":"2026-03-23T18:19:53.781Z"}
+{"level":"info","message":"Socket oRCaKIojIVIlp_AxAAAG joined 69c039e156c4130a0c136a9b","timestamp":"2026-03-23T18:19:54.925Z"}
+{"level":"info","message":"Socket oRCaKIojIVIlp_AxAAAG joined 69ba36ebd7a683cbfc959d6c","timestamp":"2026-03-23T18:20:35.334Z"}
+{"level":"info","message":"Socket oRCaKIojIVIlp_AxAAAG joined 69c127ff84886c7a997de397","timestamp":"2026-03-23T18:21:07.189Z"}
+{"level":"info","message":"Socket I09OA1EZ22RTLWdAAAAK joined 69ba36ebd7a683cbfc959d6c","timestamp":"2026-03-23T18:21:10.383Z"}
+{"level":"info","message":"Socket oRCaKIojIVIlp_AxAAAG joined 69ba36ebd7a683cbfc959d6c","timestamp":"2026-03-23T18:21:15.349Z"}
+{"level":"info","message":"Socket I09OA1EZ22RTLWdAAAAK joined 69c0cfc28e73a56dd6ec7259","timestamp":"2026-03-23T18:21:16.841Z"}
+{"level":"info","message":"Socket I09OA1EZ22RTLWdAAAAK joined 69ba36ebd7a683cbfc959d6c","timestamp":"2026-03-23T18:21:26.953Z"}
+{"level":"info","message":"Server is running on port 5000","timestamp":"2026-03-23T18:41:08.017Z"}
+{"level":"info","message":"Socket 99s0PJE78IdzUAl7AAAJ joined 69ba36ebd7a683cbfc959d6c","timestamp":"2026-03-23T18:41:59.290Z"}
+{"level":"info","message":"User 69ba2346594eee63f6f41f84 disconnected","timestamp":"2026-03-23T18:42:13.932Z"}
+{"level":"info","message":"User 69c1257d84886c7a997de211 disconnected","timestamp":"2026-03-23T18:43:17.468Z"}
+{"level":"info","message":"User 69c1257d84886c7a997de211 disconnected","timestamp":"2026-03-23T18:43:19.960Z"}
+{"level":"info","message":"User 69b842a4f46dcb307687e923 disconnected","timestamp":"2026-03-23T18:43:30.659Z"}
+{"level":"info","message":"User 69b842a4f46dcb307687e922 disconnected","timestamp":"2026-03-23T18:43:51.499Z"}
+{"level":"info","message":"User 69b842a4f46dcb307687e922 disconnected","timestamp":"2026-03-23T18:43:56.951Z"}
+{"level":"info","message":"User 69b842a4f46dcb307687e922 disconnected","timestamp":"2026-03-23T18:43:58.863Z"}
+{"level":"info","message":"User 69b842a4f46dcb307687e923 disconnected","timestamp":"2026-03-23T18:44:01.081Z"}
+{"level":"info","message":"Socket YqNt0PYvg04Lz6s8AAAg joined 69c189ac53e1ce650ec6d012","timestamp":"2026-03-23T18:46:03.820Z"}
+{"level":"info","message":"Socket YqNt0PYvg04Lz6s8AAAg joined 69c18a0153e1ce650ec6d11b","timestamp":"2026-03-23T18:46:04.610Z"}
+{"level":"info","message":"User 69b842a4f46dcb307687e923 disconnected","timestamp":"2026-03-23T18:46:17.423Z"}
+{"level":"info","message":"User 69b842a4f46dcb307687e923 disconnected","timestamp":"2026-03-23T18:46:45.645Z"}
+{"level":"info","message":"User 69b842a4f46dcb307687e922 disconnected","timestamp":"2026-03-23T18:46:50.840Z"}
+{"level":"info","message":"Socket nSujur3Ehy1E32OzAAAu joined 69c18a0153e1ce650ec6d11b","timestamp":"2026-03-23T18:46:52.449Z"}
+{"level":"info","message":"User 69b842a4f46dcb307687e923 disconnected","timestamp":"2026-03-23T18:50:01.631Z"}
+{"level":"info","message":"User 69b842a4f46dcb307687e923 disconnected","timestamp":"2026-03-23T18:51:38.689Z"}
+{"level":"info","message":"User 69b842a4f46dcb307687e923 disconnected","timestamp":"2026-03-23T18:51:47.648Z"}
+{"level":"info","message":"User 69b842a4f46dcb307687e923 disconnected","timestamp":"2026-03-23T18:52:08.170Z"}
+{"level":"info","message":"User 69b842a4f46dcb307687e923 disconnected","timestamp":"2026-03-23T18:53:12.175Z"}
+{"level":"info","message":"Socket xiUQaAbahYImgjADAABC joined 69c18a0153e1ce650ec6d11b","timestamp":"2026-03-23T18:55:10.141Z"}
+{"level":"info","message":"Socket xiUQaAbahYImgjADAABC joined 69c129c5580a2b71a6815b1b","timestamp":"2026-03-23T18:55:12.060Z"}
+{"level":"info","message":"Socket xiUQaAbahYImgjADAABC joined 69c0d0548e73a56dd6ec72a2","timestamp":"2026-03-23T18:55:12.737Z"}
+{"level":"info","message":"Socket xiUQaAbahYImgjADAABC joined 69c0cfc28e73a56dd6ec7259","timestamp":"2026-03-23T18:55:13.458Z"}
+{"level":"info","message":"Socket xiUQaAbahYImgjADAABC joined 69ba58052417deea8286404e","timestamp":"2026-03-23T18:55:14.975Z"}
+{"level":"info","message":"Socket xiUQaAbahYImgjADAABC joined 69bffd4b01023f30dd81f566","timestamp":"2026-03-23T18:55:15.937Z"}
+{"level":"info","message":"Socket xiUQaAbahYImgjADAABC joined 69b84471f46dcb307687e92c","timestamp":"2026-03-23T18:55:16.715Z"}
+{"level":"info","message":"Socket xiUQaAbahYImgjADAABC joined 69bffd4b01023f30dd81f566","timestamp":"2026-03-23T18:55:17.693Z"}
+{"level":"info","message":"Socket nSujur3Ehy1E32OzAAAu joined 69c129c5580a2b71a6815b1b","timestamp":"2026-03-23T18:55:22.817Z"}
+{"level":"info","message":"Socket nSujur3Ehy1E32OzAAAu joined 69c189ac53e1ce650ec6d012","timestamp":"2026-03-23T18:55:23.543Z"}
+{"level":"info","message":"Socket nSujur3Ehy1E32OzAAAu joined 69c18a0153e1ce650ec6d11b","timestamp":"2026-03-23T18:55:25.153Z"}
+{"level":"info","message":"Socket nSujur3Ehy1E32OzAAAu joined 69c0cfc28e73a56dd6ec7259","timestamp":"2026-03-23T18:55:25.877Z"}
+{"level":"info","message":"Socket nSujur3Ehy1E32OzAAAu joined 69ba58052417deea8286404e","timestamp":"2026-03-23T18:55:26.550Z"}
+{"level":"info","message":"Socket nSujur3Ehy1E32OzAAAu joined 69ba5cf32417deea82864170","timestamp":"2026-03-23T18:55:27.269Z"}
+{"level":"info","message":"Socket nSujur3Ehy1E32OzAAAu joined 69ba5cba2417deea82864146","timestamp":"2026-03-23T18:55:28.106Z"}
+{"level":"info","message":"Socket nSujur3Ehy1E32OzAAAu joined 69ba36ebd7a683cbfc959d6c","timestamp":"2026-03-23T18:55:29.762Z"}
+{"level":"info","message":"Socket nSujur3Ehy1E32OzAAAu joined 69b84471f46dcb307687e92b","timestamp":"2026-03-23T18:55:30.490Z"}
+{"level":"info","message":"Socket nSujur3Ehy1E32OzAAAu joined 69ba36ebd7a683cbfc959d6c","timestamp":"2026-03-23T18:55:31.532Z"}
+{"level":"info","message":"Socket nSujur3Ehy1E32OzAAAu joined 69ba5cba2417deea82864146","timestamp":"2026-03-23T18:55:41.702Z"}
+{"level":"info","message":"Socket nSujur3Ehy1E32OzAAAu joined 69ba5cf32417deea82864170","timestamp":"2026-03-23T18:55:42.481Z"}
+{"level":"info","message":"User 69b842a4f46dcb307687e922 disconnected","timestamp":"2026-03-23T18:56:07.135Z"}
+{"level":"info","message":"Socket OlJsHxg7u6sNuWJeAABG joined 69c0cfc28e73a56dd6ec7259","timestamp":"2026-03-23T18:56:09.202Z"}
+{"level":"info","message":"User 69b842a4f46dcb307687e922 disconnected","timestamp":"2026-03-23T18:57:42.977Z"}
+{"level":"info","message":"Socket iZqKCqMa1hGnNGU6AABK joined 69c129c5580a2b71a6815b1b","timestamp":"2026-03-23T18:57:45.745Z"}
+{"level":"info","message":"User 69b842a4f46dcb307687e922 disconnected","timestamp":"2026-03-23T18:58:50.214Z"}
+{"level":"info","message":"Socket qbQSd6DEtAAQYoZzAABO joined 69c129c5580a2b71a6815b1b","timestamp":"2026-03-23T18:58:52.505Z"}
+{"level":"info","message":"User 69b842a4f46dcb307687e922 disconnected","timestamp":"2026-03-23T19:00:00.557Z"}
+{"level":"info","message":"Socket dSMDs2hiHL0r2r0DAABS joined 69c189ac53e1ce650ec6d012","timestamp":"2026-03-23T19:00:02.596Z"}
+{"level":"info","message":"User 69b842a4f46dcb307687e922 disconnected","timestamp":"2026-03-23T19:00:24.114Z"}
+{"level":"info","message":"Socket YrVTwwpojdQSFVTpAABW joined 69c18a0153e1ce650ec6d11b","timestamp":"2026-03-23T19:00:25.811Z"}
+{"level":"info","message":"Socket YrVTwwpojdQSFVTpAABW joined 69c129c5580a2b71a6815b1b","timestamp":"2026-03-23T19:00:27.336Z"}
+{"level":"info","message":"Socket YrVTwwpojdQSFVTpAABW joined 69c189ac53e1ce650ec6d012","timestamp":"2026-03-23T19:00:28.225Z"}
+{"level":"info","message":"Socket YrVTwwpojdQSFVTpAABW joined 69c129c5580a2b71a6815b1b","timestamp":"2026-03-23T19:00:28.957Z"}
+{"level":"info","message":"Socket YrVTwwpojdQSFVTpAABW joined 69ba58052417deea8286404e","timestamp":"2026-03-23T19:00:29.691Z"}
+{"level":"info","message":"Socket YrVTwwpojdQSFVTpAABW joined 69ba5cf32417deea82864170","timestamp":"2026-03-23T19:00:31.254Z"}
+{"level":"info","message":"Socket YrVTwwpojdQSFVTpAABW joined 69c0cfc28e73a56dd6ec7259","timestamp":"2026-03-23T19:00:32.344Z"}
+{"level":"info","message":"Socket YrVTwwpojdQSFVTpAABW joined 69ba58052417deea8286404e","timestamp":"2026-03-23T19:00:33.040Z"}
+{"level":"info","message":"User 69b842a4f46dcb307687e922 disconnected","timestamp":"2026-03-23T19:00:36.667Z"}
+{"level":"info","message":"Socket sXZkVZZNKfHjz_-KAABa joined 69ba58052417deea8286404e","timestamp":"2026-03-23T19:00:38.311Z"}
+{"level":"info","message":"Socket sXZkVZZNKfHjz_-KAABa joined 69c129c5580a2b71a6815b1b","timestamp":"2026-03-23T19:00:39.106Z"}
+{"level":"info","message":"Socket sXZkVZZNKfHjz_-KAABa joined 69ba36ebd7a683cbfc959d6c","timestamp":"2026-03-23T19:00:39.839Z"}
+{"level":"info","message":"Socket sXZkVZZNKfHjz_-KAABa joined 69c18a0153e1ce650ec6d11b","timestamp":"2026-03-23T19:01:12.206Z"}
+{"level":"info","message":"Socket xiUQaAbahYImgjADAABC joined 69c18a0153e1ce650ec6d11b","timestamp":"2026-03-23T19:01:15.327Z"}
+{"level":"info","message":"User 69b842a4f46dcb307687e923 disconnected","timestamp":"2026-03-23T19:01:39.067Z"}
+{"level":"info","message":"User 69b842a4f46dcb307687e922 disconnected","timestamp":"2026-03-23T19:01:42.057Z"}
+{"level":"info","message":"Server is running on port 5000","timestamp":"2026-03-23T19:01:56.931Z"}
+{"level":"info","message":"Server is running on port 5000","timestamp":"2026-03-24T03:59:31.100Z"}
+{"level":"info","message":"User 69c1257d84886c7a997de211 disconnected","timestamp":"2026-03-24T04:02:27.854Z"}
+{"level":"info","message":"Socket ywoz5LnZf-cMbl2SAAAH joined 69c189ac53e1ce650ec6d012","timestamp":"2026-03-24T04:02:38.782Z"}
+{"level":"info","message":"Socket ywoz5LnZf-cMbl2SAAAH joined 69c127ff84886c7a997de397","timestamp":"2026-03-24T04:02:39.907Z"}
+{"level":"info","message":"User 69c1257d84886c7a997de211 disconnected","timestamp":"2026-03-24T04:03:15.399Z"}
+{"level":"info","message":"Socket K2S8CwCVaEHGbuBYAAAL joined 69c189ac53e1ce650ec6d012","timestamp":"2026-03-24T04:03:17.287Z"}
+{"level":"info","message":"Socket K2S8CwCVaEHGbuBYAAAL joined 69c127ff84886c7a997de397","timestamp":"2026-03-24T04:03:17.999Z"}
+{"level":"info","message":"Socket UmqRxHZ5srbMxy0wAAAD joined 69c127ff84886c7a997de397","timestamp":"2026-03-24T04:07:12.869Z"}
+{"level":"info","message":"User 69ba2346594eee63f6f41f84 disconnected","timestamp":"2026-03-24T04:07:37.254Z"}
+{"level":"info","message":"Socket SziM8csa9MuMfvT2AAAP joined 69c127ff84886c7a997de397","timestamp":"2026-03-24T04:07:39.424Z"}
+{"level":"info","message":"Socket SziM8csa9MuMfvT2AAAP joined 69c039e156c4130a0c136a9b","timestamp":"2026-03-24T04:08:00.229Z"}
+{"level":"info","message":"Socket SziM8csa9MuMfvT2AAAP joined 69c01cf0532dd120ccdc8204","timestamp":"2026-03-24T04:08:02.103Z"}
+{"level":"info","message":"Socket SziM8csa9MuMfvT2AAAP joined 69c127ff84886c7a997de397","timestamp":"2026-03-24T04:08:03.260Z"}
+{"level":"info","message":"User 69c1257d84886c7a997de211 disconnected","timestamp":"2026-03-24T04:19:59.391Z"}
+{"level":"info","message":"Socket NQQrJ708qaH9T2jwAAAT joined 69c127ff84886c7a997de397","timestamp":"2026-03-24T04:20:00.733Z"}
+{"level":"info","message":"User 69c1257d84886c7a997de211 disconnected","timestamp":"2026-03-24T04:21:13.080Z"}
+{"level":"info","message":"User 69c1257d84886c7a997de211 disconnected","timestamp":"2026-03-24T04:21:13.261Z"}
+{"level":"info","message":"User 69c1257d84886c7a997de211 disconnected","timestamp":"2026-03-24T04:21:13.440Z"}
+{"level":"info","message":"User 69c1257d84886c7a997de211 disconnected","timestamp":"2026-03-24T04:21:13.668Z"}
+{"level":"info","message":"Socket SlacC7aSrO8QOhTgAAAj joined 69c127ff84886c7a997de397","timestamp":"2026-03-24T04:21:14.798Z"}
+{"level":"info","message":"User 69ba2346594eee63f6f41f84 disconnected","timestamp":"2026-03-24T04:21:31.877Z"}
+{"level":"info","message":"Socket 5Uaoq1J8ktbRBD7MAAAn joined 69c127ff84886c7a997de397","timestamp":"2026-03-24T04:21:33.367Z"}
+{"level":"info","message":"User 69c1257d84886c7a997de211 disconnected","timestamp":"2026-03-24T04:24:59.223Z"}
+{"level":"info","message":"Socket d7Yo38HieXuRqCZWAAAr joined 69c127ff84886c7a997de397","timestamp":"2026-03-24T04:25:00.572Z"}
+{"level":"info","message":"Socket 5Uaoq1J8ktbRBD7MAAAn joined 69c129c5580a2b71a6815b1b","timestamp":"2026-03-24T04:28:55.700Z"}
+{"level":"info","message":"Socket 5Uaoq1J8ktbRBD7MAAAn joined 69c127ff84886c7a997de397","timestamp":"2026-03-24T04:28:56.463Z"}
+{"level":"info","message":"User 69ba2346594eee63f6f41f84 disconnected","timestamp":"2026-03-24T04:29:33.987Z"}
+{"level":"info","message":"Socket 2R_csZBYK902_ow2AAAv joined 69c127ff84886c7a997de397","timestamp":"2026-03-24T04:29:35.681Z"}
+{"level":"info","message":"User 69c1257d84886c7a997de211 disconnected","timestamp":"2026-03-24T04:29:39.126Z"}
+{"level":"info","message":"Socket UBE5jkGLu3JlQh3IAAAz joined 69c127ff84886c7a997de397","timestamp":"2026-03-24T04:29:40.599Z"}
+{"level":"info","message":"User 69c1257d84886c7a997de211 disconnected","timestamp":"2026-03-24T05:47:40.658Z"}
+{"level":"info","message":"User 69ba2346594eee63f6f41f84 disconnected","timestamp":"2026-03-24T06:37:44.842Z"}
+{"level":"info","message":"User 69ba2346594eee63f6f41f84 disconnected","timestamp":"2026-03-24T06:39:20.759Z"}
+{"level":"info","message":"User 69ba2346594eee63f6f41f84 disconnected","timestamp":"2026-03-24T06:39:23.246Z"}
+{"level":"info","message":"User 69ba2346594eee63f6f41f84 disconnected","timestamp":"2026-03-24T07:52:00.558Z"}
+{"level":"info","message":"User 69ba2346594eee63f6f41f84 disconnected","timestamp":"2026-03-24T08:43:29.740Z"}
+{"level":"info","message":"User 69ba2346594eee63f6f41f84 disconnected","timestamp":"2026-03-24T08:51:27.999Z"}
+{"level":"info","message":"User 69ba2346594eee63f6f41f84 disconnected","timestamp":"2026-03-24T08:54:28.042Z"}
+{"level":"info","message":"User 69ba2346594eee63f6f41f84 disconnected","timestamp":"2026-03-24T10:15:54.653Z"}
+{"level":"info","message":"User 69ba2346594eee63f6f41f84 disconnected","timestamp":"2026-03-24T12:14:05.913Z"}
+{"level":"info","message":"User 69ba2346594eee63f6f41f84 disconnected","timestamp":"2026-03-24T12:46:29.699Z"}
+{"level":"info","message":"Server is running on port 5000","timestamp":"2026-03-24T14:19:11.702Z"}

@@ -2,6 +2,7 @@ import {
   getChatUser,
   getUserByPhone,
   searchUserByNameApi,
+  updateUserApi,
 } from "../api/userApi";
 
 export const getUser = async () => {
@@ -15,5 +16,11 @@ export const userbyPhone = async (phone: string) => {
 
 export const getUsersByName = async (name: string) => {
   const res = await searchUserByNameApi(name);
+  return res.data;
+};
+
+// ← new
+export const updateUserService = async (name: string) => {
+  const res = await updateUserApi(name);
   return res.data;
 };

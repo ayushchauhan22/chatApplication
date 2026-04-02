@@ -1,5 +1,8 @@
 import { io } from '../server';
-import { createConversation } from '../services/conversationService';
+import {
+  createConversation,
+  findConversationById,
+} from '../services/conversationService';
 import { Request, Response } from 'express';
 import {
   chatRequestSchema,
@@ -16,15 +19,12 @@ import {
 
 import { emitRequestAccepted } from '../sockets/conversation.socket';
 
-
 export const sendChatRequest = async (req: Request, res: Response) => {
-  // Zod validation
   const result = chatRequestSchema.safeParse(req.body);
   if (!result.success) {
     return res.status(400).json(result.error.flatten());
   }
 
-  // check if chat request already exist
   const { senderId, receiverId } = result.data;
   const existingRequest = await findExistingChatRequest(senderId, receiverId);
 
@@ -32,18 +32,15 @@ export const sendChatRequest = async (req: Request, res: Response) => {
     if (existingRequest.status === 'pending') {
       return res.status(400).json({ error: 'Request already pending' });
     }
-
     if (existingRequest.status === 'accepted') {
       return res.status(400).json({ error: 'Already connected' });
     }
   }
 
-  // check if conversation already exists between sender and receiver
   const existingConversation = await findExistingConversationBetweenUsers(
     senderId,
     receiverId,
   );
-
   if (existingConversation) {
     return res
       .status(400)
@@ -55,29 +52,21 @@ export const sendChatRequest = async (req: Request, res: Response) => {
 };
 
 export const getIncomingChatRequests = async (req: Request, res: Response) => {
-  // Zod validation
-
   const result = chatRequestIdSchema.safeParse({ params: req.params });
   if (!result.success) {
     return res.status(400).json(result.error.flatten());
   }
-
   const userId = req.params.requestId as string;
-
   const chatRequests = await getIncomingChatRequestsService(userId);
   res.json(chatRequests);
 };
 
 export const getOutgoingChatRequests = async (req: Request, res: Response) => {
-  // Zod validation
-
   const result = chatRequestIdSchema.safeParse({ params: req.params });
   if (!result.success) {
     return res.status(400).json(result.error.flatten());
   }
-
   const userId = result.data.params.requestId;
-
   const chatRequests = await getOutgoingChatRequestsService(userId);
   res.json(chatRequests);
 };
@@ -90,21 +79,26 @@ export const acceptChatRequest = async (req: Request, res: Response) => {
   const chatRequest = await updateChatRequestStatus(requestId, 'accepted');
   if (!chatRequest) return res.status(404).json({ error: 'Request not found' });
 
-  const conversation = await createConversation({
+  // create raw conversation
+  const rawConversation = await createConversation({
     participants: [chatRequest.sender_id, chatRequest.receiver_id],
   });
+
+  // ← populate BEFORE emitting — this is the fix for Problem 1 & 2
+  // now participants array has { _id, name, email, phone } not just ObjectIds
+  const populatedConversation = await findConversationById(
+    rawConversation._id.toString(),
+  );
 
   emitRequestAccepted(
     io,
     chatRequest.sender_id.toString(),
     chatRequest.receiver_id.toString(),
-    conversation,
+    populatedConversation, // ← send populated, not raw
   );
 
-  res.json({ chatRequest, conversation });
+  res.json({ chatRequest, conversation: populatedConversation });
 };
-
-
 
 export const rejectChatRequest = async (req: Request, res: Response) => {
   const result = chatRequestIdSchema.safeParse({ params: req.params });

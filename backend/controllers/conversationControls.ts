@@ -17,12 +17,11 @@ import {
   removeParticipantFromConversation,
 } from '../services/conversationService';
 import Conversation from '../modelsDB/conversation';
-import { io } from '../server'; // ← correct import, from your own server
+import { io } from '../server';
 import {
   emitGroupUpdated,
   emitRemovedFromGroup,
-} from '../sockets/conversation.socket'; // ← from socket file
-
+} from '../sockets/conversation.socket';
 import { deleteChatRequestByParticipants } from '../services/chatRequestService';
 
 export const createConversation = async (req: Request, res: Response) => {
@@ -36,27 +35,42 @@ export const createConversation = async (req: Request, res: Response) => {
       participants: { $all: participants },
       is_group: true,
     });
-    if (existingConversation) return res.status(200).json(existingConversation);
+    if (existingConversation) {
+      // ← populate existing before returning
+      const populated = await findConversationById(
+        existingConversation._id.toString(),
+      );
+      return res.status(200).json(populated);
+    }
 
-    const ack = await createConversationService({
+    const raw = await createConversationService({
       participants,
       is_group: true,
       group_name,
     });
-    return res.status(201).json(ack);
+    // ← populate new group before returning so frontend gets names
+    const populated = await findConversationById(raw._id.toString());
+    return res.status(201).json(populated);
   }
 
   const existingConversation = await findConversation({
     participants: { $all: participants, $size: 2 },
     is_group: false,
   });
-  if (existingConversation) return res.status(200).json(existingConversation);
+  if (existingConversation) {
+    const populated = await findConversationById(
+      existingConversation._id.toString(),
+    );
+    return res.status(200).json(populated);
+  }
 
-  const ack = await createConversationService({
+  const raw = await createConversationService({
     participants,
     is_group: false,
   });
-  res.status(201).json(ack);
+  // ← populate before returning
+  const populated = await findConversationById(raw._id.toString());
+  res.status(201).json(populated);
 };
 
 export const getUserConversations = async (req: Request, res: Response) => {
@@ -64,7 +78,6 @@ export const getUserConversations = async (req: Request, res: Response) => {
     userId: req.body.decoded.Id,
   });
   if (!result.success) return res.status(400).json(result.error.flatten());
-
   const conversations = await findUserConversations(result.data.userId);
   res.json(conversations);
 };
@@ -72,11 +85,9 @@ export const getUserConversations = async (req: Request, res: Response) => {
 export const getConversationById = async (req: Request, res: Response) => {
   const result = conversationByIdSchema.safeParse({ params: req.params });
   if (!result.success) return res.status(400).json(result.error.flatten());
-
   const conversation = await findConversationById(result.data.params.id);
   if (!conversation)
     return res.status(404).json({ message: 'Conversation not found' });
-
   res.json(conversation);
 };
 
@@ -96,10 +107,10 @@ export const addUserToConversation = async (req: Request, res: Response) => {
 
   const populated = await findConversationById(id);
   if (populated) {
-    emitGroupUpdated(io, populated.participants, populated); // ← clean
+    emitGroupUpdated(io, populated.participants, populated);
   }
 
-  res.json(conversationRoom);
+  res.json(populated);
 };
 
 export const removeUserFromConversation = async (
@@ -121,10 +132,10 @@ export const removeUserFromConversation = async (
 
   const populated = await findConversationById(id);
   if (populated) {
-    emitGroupUpdated(io, populated.participants, populated); // ← notify remaining
+    emitGroupUpdated(io, populated.participants, populated);
   }
 
-  emitRemovedFromGroup(io, userId, id); // ← notify removed user
+  emitRemovedFromGroup(io, userId, id);
 
   res.json(conversationRoom);
 };
@@ -152,7 +163,6 @@ export const deleteConversationById = async (req: Request, res: Response) => {
   if (!conversation)
     return res.status(404).json({ message: 'Conversation not found' });
 
-  // for direct conversations delete the chat request between the two users
   if (!conversation.is_group && conversation.participants.length === 2) {
     const [user1, user2] = conversation.participants.map((p: any) =>
       p._id ? p._id.toString() : p.toString(),
@@ -161,7 +171,6 @@ export const deleteConversationById = async (req: Request, res: Response) => {
   }
 
   await deleteConversation(String(id));
-
   emitConversationDeleted(io, conversation.participants, String(id));
 
   res.json({ message: 'Conversation deleted' });

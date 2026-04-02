@@ -14,31 +14,60 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Search, X, Plus, LogOut, MessageSquare } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { Search, X, Plus, LogOut, MessageSquare, Pencil, Loader2, Check } from "lucide-react";
+import { updateUserService } from "@/services/userServices";
+import { toast } from "sonner";
 
 function Sidebar() {
     const { conversations, setActiveConversation } = useChatStore();
-    const { user, logout } = userAuthStore();
+    const { user, logout, updateUser } = userAuthStore();
     const navigate = useNavigate();
     const { onlineUsers } = useSocketStore();
     const { loadMoreConversations, hasMore, loadingMore } = useConversation();
     const [searchInput, setSearchInput] = useState("");
     const [showCreateGroup, setShowCreateGroup] = useState(false);
+    const [showEditProfile, setShowEditProfile] = useState(false);
+    const [editName, setEditName] = useState("");
+    const [saving, setSaving] = useState(false);
 
     useConversation();
     const debouncedName = useDebounce(searchInput.trim(), 1000);
 
     const handleLogout = async () => { await logout(); navigate("/login"); };
 
+    const handleOpenEdit = () => {
+        setEditName(user?.name || "");
+        setShowEditProfile(true);
+    };
+
+    const handleSaveProfile = async () => {
+        if (!editName.trim() || editName.trim() === user?.name) {
+            setShowEditProfile(false);
+            return;
+        }
+        setSaving(true);
+        try {
+            const updated = await updateUserService(editName.trim());
+            // update store instantly — no refresh needed
+            updateUser({ name: updated.name });
+            toast.success("Name updated");
+            setShowEditProfile(false);
+        } catch (err: any) {
+            toast.error(err?.response?.data?.message || "Failed to update name");
+        } finally {
+            setSaving(false);
+        }
+    };
+
     const nametag = user?.name?.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2);
 
     return (
-        // bg-card = Pearl Aqua from CSS variable
         <div className="flex flex-col h-full bg-card border-r border-border">
 
             {/* TOP BAR */}
             <div className="px-4 pt-5 pb-3.5 border-b border-border space-y-3.5 flex-shrink-0">
-
                 <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3 min-w-0">
                         <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
@@ -51,11 +80,8 @@ function Sidebar() {
 
                 <div className="flex items-center justify-between">
                     <h2 className="text-card-foreground font-bold text-base">Chats</h2>
-                    <Button
-                        variant="ghost" size="icon"
-                        onClick={() => setShowCreateGroup(true)}
-                        className="w-8 h-8 text-card-foreground hover:bg-accent hover:text-accent-foreground"
-                    >
+                    <Button variant="ghost" size="icon" onClick={() => setShowCreateGroup(true)}
+                        className="w-8 h-8 text-card-foreground hover:bg-accent hover:text-accent-foreground">
                         <Plus className="w-4 h-4" />
                     </Button>
                 </div>
@@ -64,25 +90,18 @@ function Sidebar() {
 
                 <div className="relative">
                     <Search className="absolute inset-y-0 left-3 my-auto w-4 h-4 text-muted-foreground pointer-events-none" />
-                    <Input
-                        type="text"
-                        placeholder="Search by name..."
-                        value={searchInput}
-                        onChange={(e) => setSearchInput(e.target.value)}
-                        className="pl-10 pr-10"
-                    />
+                    <Input type="text" placeholder="Search by name..." value={searchInput}
+                        onChange={(e) => setSearchInput(e.target.value)} className="pl-10 pr-10" />
                     {searchInput && (
-                        <button
-                            onClick={() => setSearchInput("")}
-                            className="absolute inset-y-0 right-3 flex items-center text-muted-foreground hover:text-card-foreground"
-                        >
+                        <button onClick={() => setSearchInput("")}
+                            className="absolute inset-y-0 right-3 flex items-center text-muted-foreground hover:text-card-foreground">
                             <X className="w-4 h-4" />
                         </button>
                     )}
                 </div>
             </div>
 
-            {/* CONTENT — keep overflow-y-auto, NOT ScrollArea */}
+            {/* CONTENT */}
             <div className="flex-1 overflow-y-auto px-3 pt-3 hide-scrollbar">
                 {debouncedName ? (
                     <UserSearchResults searchName={debouncedName} />
@@ -90,7 +109,6 @@ function Sidebar() {
                     <>
                         {conversations?.length === 0 ? (
                             <div className="flex flex-col items-center justify-center h-72 text-center space-y-4 p-8">
-                                {/* bg-muted is valid, card/50 is NOT */}
                                 <div className="w-16 h-16 bg-muted rounded-2xl flex items-center justify-center">
                                     <MessageSquare className="w-8 h-8 text-muted-foreground" />
                                 </div>
@@ -122,23 +140,17 @@ function Sidebar() {
                                     const unread = conversation.unreadCount ?? 0;
 
                                     return (
-                                        <div
-                                            key={conversation._id}
-                                            onClick={() => {
-                                                setActiveConversation(conversation);
-                                                useChatStore.getState().clearUnread(conversation._id);
-                                            }}
-                                            className="group flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-colors hover:bg-accent border border-transparent hover:border-border"
-                                        >
+                                        <div key={conversation._id}
+                                            onClick={() => { setActiveConversation(conversation); useChatStore.getState().clearUnread(conversation._id); }}
+                                            className="group flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-colors hover:bg-accent border border-transparent hover:border-border">
+
                                             <div className="relative flex-shrink-0">
                                                 <div className="w-11 h-11 bg-primary rounded-xl flex items-center justify-center shadow-sm">
                                                     <span className="font-bold text-sm text-primary-foreground">{initials}</span>
                                                 </div>
                                                 {!isGroup && (
-                                                    <div
-                                                        className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-card"
-                                                        style={{ backgroundColor: isOnline ? "hsl(var(--online))" : "hsl(var(--offline))" }}
-                                                    />
+                                                    <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-card"
+                                                        style={{ backgroundColor: isOnline ? "hsl(var(--online))" : "hsl(var(--offline))" }} />
                                                 )}
                                             </div>
 
@@ -147,10 +159,8 @@ function Sidebar() {
                                                 <div className="flex items-center gap-1.5 mt-0.5">
                                                     <span className="text-xs text-muted-foreground">{isGroup ? "Group" : "Direct"}</span>
                                                     {!isGroup && (
-                                                        <span
-                                                            className="text-xs font-medium"
-                                                            style={{ color: isOnline ? "hsl(var(--online))" : "hsl(var(--offline))" }}
-                                                        >
+                                                        <span className="text-xs font-medium"
+                                                            style={{ color: isOnline ? "hsl(var(--online))" : "hsl(var(--offline))" }}>
                                                             · {isOnline ? "Online" : "Offline"}
                                                         </span>
                                                     )}
@@ -167,12 +177,8 @@ function Sidebar() {
                                 })}
 
                                 {hasMore && (
-                                    <Button
-                                        variant="ghost"
-                                        onClick={loadMoreConversations}
-                                        disabled={loadingMore}
-                                        className="w-full text-xs text-muted-foreground hover:text-card-foreground h-9 mt-1"
-                                    >
+                                    <Button variant="ghost" onClick={loadMoreConversations} disabled={loadingMore}
+                                        className="w-full text-xs text-muted-foreground hover:text-card-foreground h-9 mt-1">
                                         {loadingMore ? "Loading..." : "Load more"}
                                     </Button>
                                 )}
@@ -186,23 +192,57 @@ function Sidebar() {
 
             {/* FOOTER */}
             <div className="px-3 py-3 flex-shrink-0">
-                <div className="flex items-center justify-between gap-3 bg-muted rounded-xl px-3 py-2.5">
-                    <div className="flex items-center gap-2.5 min-w-0">
+                <div className="flex items-center justify-between gap-2 bg-muted rounded-xl px-3 py-2.5">
+                    <div className="flex items-center gap-2.5 min-w-0 flex-1">
                         <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
                             <span className="text-primary-foreground font-bold text-xs">{nametag}</span>
                         </div>
                         <span className="text-sm text-card-foreground font-medium truncate">{user?.name || "User"}</span>
                     </div>
-                    <Button
-                        variant="ghost" size="sm"
-                        onClick={handleLogout}
-                        className="flex-shrink-0 text-xs text-muted-foreground hover:text-destructive hover:bg-destructive/10 gap-1.5"
-                    >
-                        <LogOut className="w-3.5 h-3.5" />
-                        Logout
-                    </Button>
+                    <div className="flex items-center gap-1 flex-shrink-0">
+                        {/* edit name button */}
+                        <Button variant="ghost" size="icon" onClick={handleOpenEdit}
+                            className="w-7 h-7 text-muted-foreground hover:text-primary hover:bg-primary/10" title="Edit name">
+                            <Pencil className="w-3.5 h-3.5" />
+                        </Button>
+                        <Button variant="ghost" size="sm" onClick={handleLogout}
+                            className="text-xs text-muted-foreground hover:text-destructive hover:bg-destructive/10 gap-1.5 px-2">
+                            <LogOut className="w-3.5 h-3.5" />
+                            Logout
+                        </Button>
+                    </div>
                 </div>
             </div>
+
+            {/* Edit Profile Modal */}
+            <Dialog open={showEditProfile} onOpenChange={setShowEditProfile}>
+                <DialogContent className="w-80 p-6 space-y-4">
+                    <DialogTitle className="text-card-foreground font-semibold text-base">
+                        Edit Profile
+                    </DialogTitle>
+                    <div className="space-y-1.5">
+                        <Label className="text-xs text-muted-foreground">Display Name</Label>
+                        <Input
+                            value={editName}
+                            onChange={(e) => setEditName(e.target.value)}
+                            onKeyDown={(e) => { if (e.key === "Enter") handleSaveProfile(); }}
+                            placeholder="Your name"
+                            autoFocus
+                        />
+                    </div>
+                    <div className="flex gap-3 pt-1">
+                        <Button variant="secondary" onClick={() => setShowEditProfile(false)} className="flex-1" disabled={saving}>
+                            Cancel
+                        </Button>
+                        <Button onClick={handleSaveProfile} className="flex-1" disabled={saving || !editName.trim()}>
+                            {saving
+                                ? <><Loader2 className="w-4 h-4 animate-spin mr-2" />Saving...</>
+                                : <><Check className="w-4 h-4 mr-2" />Save</>
+                            }
+                        </Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

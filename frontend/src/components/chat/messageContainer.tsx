@@ -29,16 +29,20 @@ function MessageContainer() {
 
     const { fileInputRef, selectedFile, uploading, uploadProgress, handleFileSelect, clearFile, uploadAndSend } =
         useFileUpload(activeConversation?._id ?? "", user?._id ?? "");
+
     const { downloading, downloadProgress, handleDownload } = useFileDownload();
+
     const { menuRef, modal, setModal, searchQuery, setSearchQuery, targetUserId, setTargetUserId,
         handleCloseModal, handleConfirm, searchByName, foundUser, searching, searchError, loading, reset, notInList,
     } = useGroupMenu();
 
     useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
+    
     useEffect(() => {
         listenMessages(); listenMessageStatus();
         return () => { removeMessageListener(); stopListeningMessageStatus(); };
     }, []);
+
     useEffect(() => {
         if (!activeConversation || !user?._id || messages.length === 0) return;
         messages.forEach((msg) => {
@@ -175,10 +179,16 @@ function MessageContainer() {
                             )}
 
                             <div className="max-w-sm lg:max-w-md space-y-1.5">
-                                <div className={isSender
-                                    ? "bg-primary/95 shadow-lg ring-1 ring-primary/30 backdrop-blur-sm rounded-[18px] rounded-tr-sm px-3.5 py-2.5 text-primary-foreground"
-                                    : "bg-secondary border border-border rounded-[18px] rounded-tl-sm px-3.5 py-2.5 text-secondary-foreground"
-                                }>
+                                <div
+                                    style={{
+                                        backgroundColor: isSender ? 'hsl(var(--message-self))' : 'hsl(var(--message-other))',
+                                        color: isSender ? 'hsl(var(--message-self-fg))' : 'hsl(var(--message-other-fg))',
+                                    }}
+                                    className={isSender
+                                        ? "shadow-sm rounded-[18px] rounded-tr-sm px-3.5 py-2.5"
+                                        : "shadow-sm border border-border rounded-[18px] rounded-tl-sm px-3.5 py-2.5"
+                                    }
+                                >
                                     {msg.content && <p className="text-sm leading-relaxed break-words">{msg.content}</p>}
                                     {msg.fileUrl && (
                                         <div className={`flex items-center gap-2 ${msg.content ? "mt-1.5" : ""} p-2.5 bg-muted/50 rounded-xl shadow-sm`}>

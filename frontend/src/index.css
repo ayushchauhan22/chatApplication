@@ -13,34 +13,46 @@
   }
 
   :root {
-    /* Custom Blue Palette */
-    --background: 255 50% 96%; /* #EDE8F5 */
-    --foreground: 225 25% 18%;
-    --card: 225 40% 85%; /* #ADBBDA */
-    --card-foreground: 225 25% 18%;
-    --popover: 225 40% 85%;
-    --popover-foreground: 225 25% 18%;
-    --primary: 225 45% 44%; /* #3D52A0 */
-    --primary-foreground: 0 0% 100%;
-    --secondary: 225 40% 92%;
-    --secondary-foreground: 225 25% 18%;
-    --accent: 225 60% 70%; /* #7091E6 */
-    --accent-foreground: 225 25% 18%;
-    --muted: 225 30% 70%; /* #8697C4 */
-    --muted-foreground: 225 20% 45%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 225 20% 82%;
-    --input: 225 40% 97%;
-    --ring: 225 60% 70%;
-    --radius: 0.75rem;
-    --message-self: 225 45% 44%;
-    --message-self-fg: 0 0% 100%;
-    --message-other: 225 40% 92%;
-    --message-other-fg: 225 25% 18%;
-    --online:  220 70% 50%;
-    --offline: 225 30% 70%;
-    --error: 0 84% 60%;
+    /* WhatsApp-like theme */
+    --background:        36  26% 91%;   /* #efeae2 — warm beige chat bg */
+    --foreground:        200 35% 10%;   /* #111b21 — near black text */
+
+    --card:              220 14% 96%;   /* #f0f2f5 — sidebar/header light gray */
+    --card-foreground:   200 35% 10%;   /* #111b21 */
+
+    --popover:           0   0% 100%;   /* #ffffff — dialogs pure white */
+    --popover-foreground:200 35% 10%;
+
+    --primary:           160 100% 33%;  /* #00a884 — WhatsApp teal green */
+    --primary-foreground:0   0%  100%;  /* white text on green */
+
+    --secondary:         0   0%  100%;  /* #ffffff — received message bubble */
+    --secondary-foreground: 200 35% 10%;
+
+    --muted:             210 10% 94%;   /* light gray — muted panels */
+    --muted-foreground:  207  8% 45%;   /* #667781 — secondary text */
+
+    --accent:            160 34% 58%;   /* very light teal — hover states */
+    --accent-foreground: 160 100% 25%;
+
+    --destructive:       0  84% 60%;
+    --destructive-foreground: 0 0% 100%; 
+
+    --border:            210 10% 88%;   /* subtle gray border */
+    --input:             0   0% 100%;   /* white input bg */
+    --ring:              160 100% 33%;  /* teal focus ring */
+    --radius:            0.5rem;        /* WhatsApp uses slightly less rounding */
+
+    /* Chat bubbles */
+    --message-self:      109 91% 87%;   /* #d9fdd3 — WhatsApp sent green */
+    --message-self-fg:   200 35% 10%;   /* dark text on green bubble */
+    --message-other:     0   0% 100%;   /* #ffffff — received white bubble */
+    --message-other-fg:  200 35% 10%;
+
+    /* Status */
+    --online:            160 100% 33%;  /* same teal as primary */
+    --offline:           207   8% 65%;  /* muted gray */
+    --error:             0   84% 60%;
   }
 
   .theme {
@@ -52,11 +64,5 @@
   }
 }
 
-
-.hide-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.hide-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
