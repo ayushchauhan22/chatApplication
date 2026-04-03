@@ -49,6 +49,8 @@
     "typescript-eslint": "^8.57.0"
   },
   "scripts": {
+    "build": "tsc",
+    "start": "node dist/server.js",
     "dev": "nodemon server.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"

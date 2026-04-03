@@ -1,6 +1,3 @@
-// Move BrowserRouter OUT — put this in main.tsx or App.tsx:
-// <BrowserRouter><AppRoutes /></BrowserRouter>
-
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { verifyUser, me } from "../services/authServices";
