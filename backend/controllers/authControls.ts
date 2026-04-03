@@ -37,10 +37,10 @@ export const registerUser = async (req: Request, res: Response) => {
   // JWT token
   const token = generateToken(userData._id, userData.email);
   res.cookie('token', token, {
-    httpOnly: true, 
-    secure: true, 
-    sameSite: 'lax', 
-    maxAge: 1 * 24 * 60 * 60 * 1000, 
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 1 * 24 * 60 * 60 * 1000,
   });
 
   res.status(201).json({
@@ -76,11 +76,11 @@ export const loginUser = async (req: Request, res: Response) => {
   const token = generateToken(user._id, emailId);
   res.cookie('token', token, {
     httpOnly: true,
-    secure: true,
+    secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
     maxAge: 1 * 24 * 60 * 60 * 1000,
   });
-  
+
   await updateUser({ emailId }, { last_seen: Date.now() });
   const { _id, name, email, phone, last_seen } = user.toObject();
 
