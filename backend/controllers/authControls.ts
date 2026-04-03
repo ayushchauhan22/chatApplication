@@ -74,8 +74,13 @@ export const loginUser = async (req: Request, res: Response) => {
 
   // JWT token generation
   const token = generateToken(user._id, emailId);
-  res.cookie('token', token, { httpOnly: true, secure: false });
-
+  res.cookie('token', token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'lax',
+    maxAge: 1 * 24 * 60 * 60 * 1000,
+  });
+  
   await updateUser({ emailId }, { last_seen: Date.now() });
   const { _id, name, email, phone, last_seen } = user.toObject();
 
