@@ -20,7 +20,7 @@ export const registerUser = async (req: Request, res: Response) => {
   const { phone, name, email, password } = result.data;
 
   // check user exist or not
-  const isEmailExist = await findUser({ email});
+  const isEmailExist = await findUser({ email });
   if (isEmailExist) {
     return res.status(400).json({ message: 'Email already registered' });
   }
@@ -36,7 +36,12 @@ export const registerUser = async (req: Request, res: Response) => {
 
   // JWT token
   const token = generateToken(userData._id, userData.email);
-  res.cookie('token', token, { httpOnly: true, secure: false });
+  res.cookie('token', token, {
+    httpOnly: true, 
+    secure: true, 
+    sameSite: 'lax', 
+    maxAge: 1 * 24 * 60 * 60 * 1000, 
+  });
 
   res.status(201).json({
     message: 'Signup successful',
@@ -53,16 +58,16 @@ export const loginUser = async (req: Request, res: Response) => {
     return res.status(400).json(result.error);
   }
   const emailId = result.data.email;
-  const password = result.data.password;  
+  const password = result.data.password;
 
   const user = await findUser({ email: emailId });
 
   if (!user) {
     return res.status(401).json({ message: 'Invalid credentials' });
-  }  
+  }
 
   const isMatched = await verifyPswd(password, user.password);
-  
+
   if (!isMatched) {
     return res.status(401).json({ message: 'Password Incorrect' });
   }
