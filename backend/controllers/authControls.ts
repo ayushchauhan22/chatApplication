@@ -73,7 +73,7 @@ export const loginUser = async (req: Request, res: Response) => {
   }
 
   // JWT token generation
-  const token = generateToken(user._id, emailId);
+  const token =  await generateToken(user._id, emailId);
   res.cookie('token', token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',

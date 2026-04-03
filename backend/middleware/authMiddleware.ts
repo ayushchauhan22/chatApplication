@@ -6,6 +6,9 @@ export const isAuthorizedUser = (
   res: Response,
   next: NextFunction,
 ) => {
+  console.log(req.cookies);
+  console.log(req);
+
   const token = req.cookies.token;
   const jwtKey = process.env.JWT_KEY as string;
 

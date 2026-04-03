@@ -3,7 +3,6 @@ import { Wrapper } from "../wrappers/wrapper";
 import { isAuthorizedUser } from '../middleware/authMiddleware';
 import {
   createConversation,
-  getUserConversations,
   getConversationById,
   addUserToConversation,
   removeUserFromConversation,
