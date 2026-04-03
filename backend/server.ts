@@ -32,9 +32,9 @@ export const io = new Server(server, {
 setupSocket(io);
 connectDB();
 
-app.use(cors({ origin: process.env.URL, credentials: true }));
-app.use(express.json());
 app.use(cookieParser());
+app.use(express.json());
+app.use(cors({ origin: process.env.URL, credentials: true }));
 
 import { getSwaggerDocument } from './swagger/swagger';
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(getSwaggerDocument()));
