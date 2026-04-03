@@ -57,8 +57,8 @@ export function useCreateGroup() {
     if (!groupName.trim() || participants.length < 2) return;
     setLoading(true);
     try {
-      const participantIds = [user?._id!, ...participants.map((p) => p._id)];
-      const group = await createGroupConversation(groupName, participantIds);
+      const participantIds = [user?._id, ...participants.map((p) => p._id)].filter(Boolean) as string[];
+      const group = await createGroupConversation(groupName, (participantIds));
       addConversation(group);
       setActiveConversation(group);
       toast.success(`Group "${groupName}" created`);
