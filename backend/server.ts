@@ -33,8 +33,8 @@ setupSocket(io);
 connectDB();
 
 app.use(cookieParser());
-app.use(express.json());
 app.use(cors({ origin: process.env.URL, credentials: true }));
+app.use(express.json());
 
 import { getSwaggerDocument } from './swagger/swagger';
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(getSwaggerDocument()));
