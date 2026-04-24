@@ -8,7 +8,7 @@ import type { ConversationInterface } from "@/interfaces/conversationInterfaces"
 import type { UserInterface } from "@/interfaces/userInterfaces";
 import useDebounce from "@/hooks/useDebounce";
 import { useNavigate } from "react-router-dom";
-import CreateGroupModal from "@/components/chat/createGroupModal";
+import CreateGroupModal from "@/components/chat/createGroupModel";
 import { useSocketStore } from "@/store/socket/socketStore";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
