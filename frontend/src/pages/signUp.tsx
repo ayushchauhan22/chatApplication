@@ -25,8 +25,8 @@ function Signup() {
     const onSubmit = async (data: SignupFormData) => {
         setIsLoading(true);
         try {
-            const result = await signupUser({ ...data, phone: Number(data.phone) });
-            setUser(result.data);
+            const result = await signupUser({ ...data, phone: Number(data.phone) });            
+            setUser(result.data.user);
             toast.success("Account created!");
             navigate("/home");
         } catch (error: any) {

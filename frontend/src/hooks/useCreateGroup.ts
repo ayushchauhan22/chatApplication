@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { createGroupConversation } from "@/services/conversationService";
-import { userbyPhone } from "@/services/userServices";
 import { useChatStore } from "@/store/chat/chatStore";
 import { userAuthStore } from "@/store/auth/authStore";
 import type { UserInterface } from "@/interfaces/userInterfaces";
@@ -8,7 +7,8 @@ import { toast } from "sonner";
 
 export function useCreateGroup() {
   const { user } = userAuthStore();
-  const { addConversation, setActiveConversation } = useChatStore();
+  const { addConversation, setActiveConversation, conversations } =
+    useChatStore();
 
   const [groupName, setGroupName] = useState("");
   const [phone, setPhone] = useState("");
@@ -24,8 +24,17 @@ export function useCreateGroup() {
     setFoundUsers([]);
     setSearchError("");
     try {
-      const result = await userbyPhone(phone);
-      const filtered = result?.data.filter(
+      const conversation = conversations.filter(
+        (c) =>
+          c.is_group === false &&
+          c.participants.some((p) => String(p.phone).includes(String(phone))),
+      );
+
+      const result = conversation.flatMap((c) =>
+        c.participants.filter((p) => String(p.phone).includes(String(phone))),
+      );
+
+      const filtered = result?.filter(
         (u: UserInterface) =>
           u._id !== user?._id && !participants.some((p) => p._id === u._id),
       );
@@ -57,8 +66,11 @@ export function useCreateGroup() {
     if (!groupName.trim() || participants.length < 2) return;
     setLoading(true);
     try {
-      const participantIds = [user?._id, ...participants.map((p) => p._id)].filter(Boolean) as string[];
-      const group = await createGroupConversation(groupName, (participantIds));
+      const participantIds = [
+        user?._id,
+        ...participants.map((p) => p._id),
+      ].filter(Boolean) as string[];
+      const group = await createGroupConversation(groupName, participantIds);
       addConversation(group);
       setActiveConversation(group);
       toast.success(`Group "${groupName}" created`);

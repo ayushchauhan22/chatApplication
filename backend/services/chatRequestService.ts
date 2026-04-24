@@ -66,7 +66,7 @@ export const deleteChatRequestByParticipants = async (
   user1: string,
   user2: string,
 ) => {
-  return await ChatRequest.deleteOne({
+  return await ChatRequest.deleteMany({
     $or: [
       { sender_id: user1, receiver_id: user2 },
       { sender_id: user2, receiver_id: user1 },

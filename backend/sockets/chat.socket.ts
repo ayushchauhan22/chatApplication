@@ -8,7 +8,6 @@ import { onlineUsers } from './connection.socket';
 import Conversation from '../modelsDB/conversation';
 
 export const registerChatEvents = (io: Server, socket: Socket) => {
-  
   socket.on('join_conversation', (conversationId: string) => {
     socket.join(conversationId);
     logger.info(`Socket ${socket.id} joined ${conversationId}`);
@@ -16,7 +15,6 @@ export const registerChatEvents = (io: Server, socket: Socket) => {
 
   socket.on('send_message', async (data) => {
     try {
-      
       const { conversationId, content, senderId, fileUrl, uploadId, filename } =
         data;
 
@@ -32,9 +30,7 @@ export const registerChatEvents = (io: Server, socket: Socket) => {
         filename,
       );
 
-      io.to(conversationId).emit('receive_message', message);
-
-      // check if any receiver is online
+      // check if any receiver is online and mark as delivered first
       const conversation = await Conversation.findById(conversationId);
       if (!conversation) return;
 
@@ -46,15 +42,23 @@ export const registerChatEvents = (io: Server, socket: Socket) => {
         onlineUsers.has(id),
       );
 
-      // only mark delivered if at least one receiver is online
+      console.log(message);
+      
+
+      // mark as delivered and notify sender
       if (anyReceiverOnline) {
         await updateMessageDelivered(message._id.toString());
 
         socket.emit('message_status_updated', {
           messageId: message._id,
+          conversationId,
           status: 'delivered',
+          lastSeenMessageId: message._id.toString(),
         });
       }
+
+      //  broadcast message to receivers
+      io.to(conversationId).emit('receive_message', message);
     } catch (error) {
       logger.error('Error sending message:', error);
       socket.emit('message_error', { error: 'Failed to send message' });

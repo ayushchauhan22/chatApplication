@@ -24,15 +24,20 @@ export const createMessage = async (
 
   await message.save();
 
-  await MessageStatus.create({
-    message_id: message._id,
-    sender_id: senderId,
-    conversation_id: conversationId,
-    status: 'sent',
-    seenBy: [],
-  });
+   const statusDoc =  await MessageStatus.create({
+     message_id: message._id,
+     sender_id: senderId,
+     conversation_id: conversationId,
+     status: 'sent',
+     seenBy: [],
+   });
 
-  return await message.populate('sender', 'name email');
+  const populated = await message.populate('sender', 'name email');
+
+ return {
+   ...populated.toObject(),
+   messageStatus: statusDoc.toObject(),
+ };
 };
 
 export const getMessagesByConversation = async (
@@ -69,19 +74,40 @@ export const updateMessageDelivered = async (messageId: string) => {
   );
 };
 
-export const updateMessageSeen = async (messageId: string, userId: string) => {
-  return await MessageStatus.findOneAndUpdate(
-    { message_id: messageId },
+
+export const updateMessageSeen = async (
+  lastSeenMessageId: string,
+  conversationId: string,
+  userId: string,
+) => {
+
+  const eligibleMessages = await Message.find({
+    conversation_id: conversationId,
+    sender: { $ne: userId },        
+    _id: { $lte: lastSeenMessageId },
+  }).select('_id');
+
+  const eligibleIds = eligibleMessages.map((m) => m._id);
+  if (eligibleIds.length === 0) return null;
+
+  return await MessageStatus.updateMany(
     {
-      status: 'seen',
-      seenAt: new Date(),
-      $addToSet: {
-        seenBy: { user_id: userId, seenAt: new Date() },
-      },
+      message_id: { $in: eligibleIds },
+      conversation_id: conversationId,
+      'seenBy.user_id': { $ne: userId }, 
     },
-    { returnDocument: 'after' },
+    {
+      $addToSet: {
+        seenBy: {
+          user_id: userId,
+          seenAt: new Date(),
+        },
+      },
+      $set: { status: 'seen' },
+    },
   );
 };
+
 
 export const editMessageById = async (message_id: string, content: string) => {
   return await Message.findByIdAndUpdate(
@@ -98,4 +124,21 @@ export const softDeleteMessage = async (messageId: string) => {
     { isActive: false },
     { returnDocument: 'after' },
   );
+};
+
+
+
+export const getSeenByForMessage = async (messageId: string) => {
+  const status = await MessageStatus.findOne({ message_id: messageId })
+    .populate('seenBy.user_id', 'name _id');
+  
+  if (!status) return [];
+
+  return status.seenBy.map((entry: any) => ({
+    user: {
+      _id: entry.user_id._id,
+      name: entry.user_id.name,
+    },
+    seenAt: entry.seenAt,
+  }));
 };

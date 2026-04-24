@@ -8,7 +8,7 @@ import type { ConversationInterface } from "@/interfaces/conversationInterfaces"
 import type { UserInterface } from "@/interfaces/userInterfaces";
 import useDebounce from "@/hooks/useDebounce";
 import { useNavigate } from "react-router-dom";
-import CreateGroupModal from "@/components/chat/CreateGroupModal";
+import CreateGroupModal from "@/components/chat/createGroupModal";
 import { useSocketStore } from "@/store/socket/socketStore";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -35,7 +35,12 @@ function Sidebar() {
     useConversation();
     const debouncedName = useDebounce(searchInput.trim(), 1000);
 
-    const handleLogout = async () => { await logout(); navigate("/login"); };
+    
+
+    const handleLogout = async () => {
+        logout(); 
+        navigate("/login"); 
+    };
 
     const handleOpenEdit = () => {
         setEditName(user?.name || "");
@@ -50,7 +55,6 @@ function Sidebar() {
         setSaving(true);
         try {
             const updated = await updateUserService(editName.trim());
-            // update store instantly — no refresh needed
             updateUser({ name: updated.name });
             toast.success("Name updated");
             setShowEditProfile(false);
@@ -59,7 +63,7 @@ function Sidebar() {
         } finally {
             setSaving(false);
         }
-    };
+    };    
 
     const nametag = user?.name?.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2);
 
@@ -90,7 +94,7 @@ function Sidebar() {
 
                 <div className="relative">
                     <Search className="absolute inset-y-0 left-3 my-auto w-4 h-4 text-muted-foreground pointer-events-none" />
-                    <Input type="text" placeholder="Search by name..." value={searchInput}
+                    <Input type="text" id="search" placeholder="Search by name..." value={searchInput}
                         onChange={(e) => setSearchInput(e.target.value)} className="pl-10 pr-10" />
                     {searchInput && (
                         <button onClick={() => setSearchInput("")}
@@ -124,7 +128,7 @@ function Sidebar() {
                                     let initials = "";
                                     let isGroup = false;
                                     let otherUserId = "";
-
+                                                                        
                                     if (conversation.is_group) {
                                         isGroup = true;
                                         displayName = conversation.group_name || "Group Chat";

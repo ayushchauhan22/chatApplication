@@ -38,11 +38,11 @@ function App() {
     if (!user?._id) return;
 
     listenRequestAccepted();
-    listenGroupUpdates(); // ← add
+    listenGroupUpdates(); 
 
     return () => {
       removeRequestAcceptedListener();
-      stopListeningGroupUpdates(); // ← add
+      stopListeningGroupUpdates(); 
     };
   }, [user?._id]);
 

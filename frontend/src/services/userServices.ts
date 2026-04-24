@@ -10,7 +10,8 @@ export const getUser = async () => {
   return res.data;
 };
 
-export const userbyPhone = async (phone: string) => {
+//usecreategroup serchby phone change 
+export const userbyPhone = async (phone: string) => { 
   return await getUserByPhone(phone);
 };
 

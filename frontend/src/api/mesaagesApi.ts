@@ -76,3 +76,7 @@ export const uploadFileApi = async (
 
 export const deleteMessageApi = (messageId: string) =>
   api.delete(`/messages/${messageId}`);
+
+
+export const getMessageSeenByApi = (messageId: string) =>
+  api.get(`/messages/${messageId}/seen`);

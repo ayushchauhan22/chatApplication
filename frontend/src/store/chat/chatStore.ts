@@ -1,10 +1,6 @@
 import { create } from "zustand";
 import type { ConversationInterface as Conversation } from "@/interfaces/conversationInterfaces";
-import type {
-  MessageInterface,
-  MessageStatusInterface,
-} from "@/interfaces/messageInterfaces";
-
+import type { MessageInterface } from "@/interfaces/messageInterfaces";
 
 interface ChatState {
   conversations: Conversation[];
@@ -17,7 +13,13 @@ interface ChatState {
   addMessage: (msg: MessageInterface) => void;
   addConversation: (conv: Conversation) => void;
   updateActiveConversation: (conv: Conversation) => void;
-  updateMessageStatus: ( messageId: string, status: string, seenBy?: any[]) => void;
+  updateMessageStatus: (
+    conversationId: string,
+    status: string,
+    lastSeenMessageId: string,
+    userId?: string,
+    messageId?: string,
+  ) => void;
   removeConversation: (conversationId: string) => void;
   incrementUnread: (conversationId: string) => void;
   clearUnread: (conversationId: string) => void;
@@ -46,20 +48,66 @@ export const useChatStore = create<ChatState>((set) => ({
         c._id === conv._id ? conv : c,
       ),
     })),
-  updateMessageStatus: (messageId, status, seenBy) =>
+
+  updateMessageStatus: (
+    conversationId,
+    status,
+    lastSeenMessageId,
+    userId,
+    messageId,
+  ) =>
     set((state) => ({
-      messages: state.messages.map((msg) =>
-        msg._id === messageId
-          ? {
-              ...msg,
-              messageStatus: {
-                ...(msg.messageStatus ?? {}),
-                status: status as "sent" | "delivered" | "seen", // ← cast
-                seenBy: seenBy ?? msg.messageStatus?.seenBy ?? [],
-              } as MessageStatusInterface,
-            }
-          : msg,
-      ) as MessageInterface[], // ← cast the array
+      messages: state.messages.map((msg) => {
+        if (String(msg.conversation_id ?? "") !== String(conversationId ?? ""))
+          return msg;
+
+        if (status === "delivered") {
+          // Targets one specific message. Match on messageId OR lastSeenMessageId.
+          const targetId = String(messageId ?? lastSeenMessageId ?? "");
+          if (String(msg._id ?? "") !== targetId) return msg;
+
+          // Never downgrade from seen → delivered
+          if (msg.messageStatus?.status === "seen") return msg;
+
+          return {
+            ...msg,
+            messageStatus: {
+              ...(msg.messageStatus ?? {}),
+              status: "delivered" as const,
+              lastSeenMessageId:
+                lastSeenMessageId ??
+                msg.messageStatus?.lastSeenMessageId ??
+                null,
+            },
+          };
+        }
+
+        if (status === "seen") {
+          // Skip messages sent by the person who just did the seeing
+          const isSentByViewer =
+            String(msg.sender?._id ?? "") === String(userId ?? "") ||
+            String(msg.sender ?? "") === String(userId ?? "");
+          if (isSentByViewer) return msg;
+
+          // Update all messages at or before the boundary
+          if (String(msg._id ?? "") > String(lastSeenMessageId ?? ""))
+            return msg;
+
+          return {
+            ...msg,
+            messageStatus: {
+              ...(msg.messageStatus ?? {}),
+              status: "seen" as const,
+              lastSeenMessageId:
+                lastSeenMessageId ??
+                msg.messageStatus?.lastSeenMessageId ??
+                null,
+            },
+          };
+        }
+
+        return msg;
+      }),
     })),
 
   removeConversation: (conversationId) =>
@@ -96,23 +144,20 @@ export const useChatStore = create<ChatState>((set) => ({
 
   addMessage: (msg) =>
     set((state) => {
-      const convId = msg.conversation_id;
-      const alreadyExists = state.messages.some((m) => m._id === msg._id);
+      const convId = String(msg.conversation_id ?? "");
+      const msgId = String(msg._id ?? "");
       const isActive = state.activeConversation?._id === convId;
 
       const updatedConversations = state.conversations.map((conv) => {
-        if (conv._id === convId) {
-          return {
-            ...conv,
-            lastMessage: msg,
-            updatedAt: msg.createdAt,
-            unreadCount: isActive ? 0 : (conv.unreadCount ?? 0) + 1,
-          };
-        }
-        return conv;
+        if (conv._id !== convId) return conv;
+        return {
+          ...conv,
+          lastMessage: msg,
+          updatedAt: msg.createdAt,
+          unreadCount: isActive ? 0 : (conv.unreadCount ?? 0) + 1,
+        };
       });
 
-      // sort by most recent message
       const sorted = [...updatedConversations].sort((a, b) => {
         const aTime = a.updatedAt ?? a.lastMessage?.createdAt ?? "";
         const bTime = b.updatedAt ?? b.lastMessage?.createdAt ?? "";
@@ -121,6 +166,9 @@ export const useChatStore = create<ChatState>((set) => ({
 
       if (!isActive) return { conversations: sorted };
 
+      const alreadyExists = state.messages.some(
+        (m) => String(m._id ?? "") === msgId,
+      );
       if (alreadyExists) return { conversations: sorted };
 
       return {

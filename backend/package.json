@@ -18,7 +18,7 @@
     "socket.io-client": "^4.8.3",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
-    "uuid": "^13.0.0",
+    "uuid": "^8.3.2",
     "winston": "^3.19.0",
     "zod": "^4.3.6"
   },
@@ -51,7 +51,7 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/server.js",
-    "dev": "nodemon server.ts",
+    "dev": "nodemon --exec ts-node server.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   }

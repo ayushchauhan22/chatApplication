@@ -18,6 +18,7 @@ import {
 } from '../services/chatRequestService';
 
 import { emitRequestAccepted } from '../sockets/conversation.socket';
+import { onlineUsers } from '../sockets/connection.socket';
 
 export const sendChatRequest = async (req: Request, res: Response) => {
   const result = chatRequestSchema.safeParse(req.body);
@@ -48,6 +49,14 @@ export const sendChatRequest = async (req: Request, res: Response) => {
   }
 
   const chatRequest = await createChatRequest(senderId, receiverId);
+  
+  const receiverSocketId = onlineUsers.get(receiverId);
+  if (receiverSocketId) {
+    io.to(receiverSocketId).emit('new_chat_request', {
+      from: senderId,
+    });
+  }
+
   res.status(201).json(chatRequest);
 };
 
@@ -84,17 +93,15 @@ export const acceptChatRequest = async (req: Request, res: Response) => {
     participants: [chatRequest.sender_id, chatRequest.receiver_id],
   });
 
-  // ← populate BEFORE emitting — this is the fix for Problem 1 & 2
-  // now participants array has { _id, name, email, phone } not just ObjectIds
   const populatedConversation = await findConversationById(
     rawConversation._id.toString(),
   );
 
   emitRequestAccepted(
     io,
-    chatRequest.sender_id.toString(),
-    chatRequest.receiver_id.toString(),
-    populatedConversation, // ← send populated, not raw
+    chatRequest.sender_id._id.toString(),
+    chatRequest.receiver_id._id.toString(),
+    populatedConversation,
   );
 
   res.json({ chatRequest, conversation: populatedConversation });

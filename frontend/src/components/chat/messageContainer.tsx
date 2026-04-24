@@ -8,7 +8,8 @@ import type { MessageInterface } from "@/interfaces/messageInterfaces";
 import { useFileUpload } from "@/hooks/useFileUpload";
 import { useFileDownload } from "@/hooks/useFileDownload";
 import { useGroupMenu } from "@/hooks/useGroupMenu";
-import { listenMessageStatus, sendSeen, stopListeningMessageStatus } from "@/sockets/events/statusEvents";
+import { sendSeen } from "@/sockets/events/statusEvents";
+import { useSocketStore } from "@/store/socket/socketStore";
 import { toast } from "sonner";
 import { deleteMessageService } from "@/services/messageServices";
 import { deleteConversationService } from "@/services/conversationService";
@@ -17,7 +18,8 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
-import { MoreHorizontal, Trash2, Send, Paperclip, Download, UserPlus, UserMinus, Loader2, X, MessageCircle } from "lucide-react";
+import { MoreHorizontal, Trash2, Send, Paperclip, Download, UserPlus, UserMinus, Loader2, X, MessageCircle, Info } from "lucide-react";
+import { MessageInfoModal } from "@/components/chat/messageInfoModal";
 
 function MessageContainer() {
     const { loadMore, hasMore, loadingMore } = useMessages();
@@ -26,9 +28,10 @@ function MessageContainer() {
     const [text, setText] = useState("");
     const bottomRef = useRef<HTMLDivElement>(null);
     const [confirmDelete, setConfirmDelete] = useState<{ type: "message" | "conversation"; id: string } | null>(null);
+    // State for Message Info modal — holds the message ID whose seen-by info to show
+    const [infoMessageId, setInfoMessageId] = useState<string | null>(null);
 
-    const { fileInputRef, selectedFile, uploading, uploadProgress, handleFileSelect, clearFile, uploadAndSend } =
-        useFileUpload(activeConversation?._id ?? "", user?._id ?? "");
+    const { fileInputRef, selectedFile, uploading, uploadProgress, handleFileSelect, clearFile, uploadAndSend } = useFileUpload(activeConversation?._id ?? "", user?._id ?? "");
 
     const { downloading, downloadProgress, handleDownload } = useFileDownload();
 
@@ -37,18 +40,59 @@ function MessageContainer() {
     } = useGroupMenu();
 
     useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
-    
+
     useEffect(() => {
-        listenMessages(); listenMessageStatus();
-        return () => { removeMessageListener(); stopListeningMessageStatus(); };
+        listenMessages();
+        return () => { removeMessageListener(); };
     }, []);
+
+    // Track the last messageId we already sent a "seen" for, per conversation.
+    // This prevents re-firing when the messages array updates due to status events.
+    const lastSentSeenRef = useRef<Record<string, string>>({});
 
     useEffect(() => {
         if (!activeConversation || !user?._id || messages.length === 0) return;
-        messages.forEach((msg) => {
-            const isSender = msg.sender?._id?.toString() === user._id || msg.sender?.toString() === user._id;
-            if (isSender || msg.messageStatus?.status === "seen") return;
-            sendSeen({ messageId: msg._id, conversationId: activeConversation._id, userId: user._id });
+
+        const { onlineUsers } = useSocketStore.getState();
+
+        const unseenMessages = messages.filter(msg => {
+            const isSender =
+                String(msg.sender?._id ?? "") === user._id ||
+                String(msg.sender ?? "") === user._id;
+            if (isSender) return false;
+
+            // Group: status flips to "seen" when anyone reads it, but each
+            // member needs to be checked individually via seenBy
+            if (activeConversation.is_group) {
+                const iSeenIt = msg.messageStatus?.seenBy?.some(
+                    s => String(s.user_id ?? "") === user._id
+                );
+                return !iSeenIt;
+            }
+
+            // 1-to-1: only mark as seen if the other user is currently online
+            const otherUser = activeConversation.participants?.find(
+                (p: any) => String(p._id ?? p) !== user._id
+            );
+            const otherId = String(otherUser?._id ?? otherUser ?? "");
+            if (otherId && !onlineUsers.has(otherId)) return false;
+
+            return msg.messageStatus?.status !== "seen";
+        });
+
+        if (unseenMessages.length === 0) return;
+
+        const lastUnseenMessage = unseenMessages[unseenMessages.length - 1];
+        const convId = activeConversation._id;
+
+        // Don't re-emit if we already sent seen for this message in this conversation
+        if (lastSentSeenRef.current[convId] === lastUnseenMessage._id) return;
+        lastSentSeenRef.current[convId] = lastUnseenMessage._id;
+
+        sendSeen({
+            conversationId: convId,
+            userId: user._id,
+            lastSeenMessageId: lastUnseenMessage._id,
         });
     }, [activeConversation?._id, messages]);
 
@@ -59,12 +103,14 @@ function MessageContainer() {
         sendMessageSocket({ conversationId: activeConversation._id, content: text.trim(), senderId: user?._id });
         setText("");
     };
+
     const handleDeleteMessage = async () => {
         if (!confirmDelete || confirmDelete.type !== "message") return;
         try { await deleteMessageService(confirmDelete.id); }
         catch { toast.error("Failed to delete message"); }
         finally { setConfirmDelete(null); }
     };
+
     const handleDeleteConversation = async () => {
         if (!confirmDelete || confirmDelete.type !== "conversation") return;
         try { await deleteConversationService(activeConversation!._id); toast.success("Conversation deleted"); }
@@ -141,7 +187,7 @@ function MessageContainer() {
                 </div>
             </div>
 
-            {/* Messages — bg-background = Stormy Teal */}
+            {/* Messages */}
             <div className="flex-1 px-5 py-4 overflow-y-auto space-y-3 hide-scrollbar bg-background">
                 {hasMore && (
                     <div className="flex justify-center pb-1">
@@ -154,8 +200,13 @@ function MessageContainer() {
 
                 {messages.map((msg: MessageInterface) => {
                     const isSender =
-                        msg.sender?._id?.toString() === user?._id?.toString() ||
-                        msg.sender?.toString() === user?._id?.toString();
+                        String(msg.sender?._id ?? "") === String(user?._id ?? "") ||
+                        String(msg.sender ?? "") === String(user?._id ?? "");
+
+                    // The Info button is only shown for:
+                    // 1. Group conversations (not 1-to-1)
+                    // 2. Messages sent by the current user
+                    const showInfoButton = isSender && activeConversation.is_group;
 
                     return (
                         <div key={msg._id} className={`flex w-full items-end gap-2 group ${isSender ? "justify-end" : "justify-start"}`}>
@@ -169,7 +220,7 @@ function MessageContainer() {
                                 </div>
                             )}
 
-                            {/* Delete button */}
+                            {/* Delete button (sender only) */}
                             {isSender && (
                                 <Button variant="ghost" size="icon"
                                     onClick={() => setConfirmDelete({ type: "message", id: msg._id })}
@@ -202,12 +253,12 @@ function MessageContainer() {
                                     )}
                                 </div>
 
-                                <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-1.5 justify-between">
                                     <p className={`text-xs font-medium text-muted-foreground ${isSender ? "ml-auto" : ""}`}>
                                         {new Date(msg.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                                     </p>
 
-                                    {/* Ticks */}
+                                    {/* Delivery ticks (sender only) */}
                                     {isSender && (
                                         <div className="flex gap-0.5">
                                             {msg.messageStatus?.status === "seen" ? (
@@ -239,10 +290,20 @@ function MessageContainer() {
                                     )}
                                 </div>
 
-                                {isSender && activeConversation.is_group && (msg?.messageStatus?.seenBy?.length ?? 0) > 0 && (
-                                    <p className="text-xs text-muted-foreground ml-auto">
-                                        Seen by {msg?.messageStatus?.seenBy?.length}
-                                    </p>
+                                {/*
+                                  Message Info button — replaces the old "Seen by N" text.
+                                  Visible on hover, only for group chats, only for the sender.
+                                  Clicking it opens MessageInfoModal which fetches fresh data.
+                                */}
+                                {showInfoButton && (
+                                    <button
+                                        onClick={() => setInfoMessageId(msg._id)}
+                                        className="ml-auto flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
+                                        title="See who read this message"
+                                    >
+                                        <Info className="w-3 h-3" />
+                                        {msg.messageStatus?.status === "seen" ? "Seen" : "Info"}
+                                    </button>
                                 )}
                             </div>
 
@@ -305,6 +366,7 @@ function MessageContainer() {
                 <p className="text-xs text-muted-foreground mt-2 text-center font-medium">Press Enter to send</p>
             </div>
 
+            {/* Group member management modal */}
             <Dialog open={!!modal} onOpenChange={(open) => { if (!open) handleCloseModal(); }}>
                 <DialogContent className="w-80 p-6 space-y-4">
                     <DialogTitle className="text-card-foreground font-semibold text-base">
@@ -372,7 +434,7 @@ function MessageContainer() {
                 </DialogContent>
             </Dialog>
 
-            {/* Confirm delete */}
+            {/* Confirm delete dialog */}
             <Dialog open={!!confirmDelete} onOpenChange={(open) => { if (!open) setConfirmDelete(null); }}>
                 <DialogContent className="w-72 p-6 space-y-4">
                     <div className="flex items-center gap-3">
@@ -395,6 +457,13 @@ function MessageContainer() {
                 </DialogContent>
             </Dialog>
 
+            {/* Message Info Modal — fetches seen-by on demand, group chats only */}
+            <MessageInfoModal
+                messageId={infoMessageId}
+                onClose={() => setInfoMessageId(null)}
+            />
+
+            {/* Upload/download progress overlay */}
             {(uploading || downloading) && (
                 <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm z-10">
                     <div className="flex flex-col items-center gap-3">

@@ -13,20 +13,23 @@ export const registerMessageStatusEvents = (io: Server, socket: Socket) => {
 
     io.to(conversationId).emit('message_status_updated', {
       messageId,
+      conversationId,
       status: 'delivered',
+      lastSeenMessageId: messageId,
     });
   });
 
   socket.on('message_seen', async (data) => {
-    const { messageId, conversationId, userId } = data; // ← userId needed for seenBy
+    const { lastSeenMessageId, conversationId, userId } = data;
 
-    const updated = await updateMessageSeen(messageId, userId);
+    const updated = await updateMessageSeen(lastSeenMessageId, conversationId,userId);
     if (!updated) return;
 
     io.to(conversationId).emit('message_status_updated', {
-      messageId,
+      conversationId: conversationId,
       status: 'seen',
-      seenBy: updated.seenBy, // ← send full seenBy array to frontend
+      userId,
+      lastSeenMessageId,
     });
   });
 };

@@ -3,16 +3,20 @@ import { userAuthStore } from "@/store/auth/authStore";
 import {
   listenOnlineUsers,
   stopListeningOnlineUsers,
+  listenMessageStatus,
+  stopListeningMessageStatus,
 } from "@/sockets/events/statusEvents";
 
-let listenersRegistered = false; 
+let listenersRegistered = false;
 
 export const connectSocket = () => {
   const user = userAuthStore.getState().user;
   if (!user?._id) return;
 
+
   if (!listenersRegistered) {
     listenOnlineUsers();
+    listenMessageStatus();
     listenersRegistered = true;
   }
 
@@ -31,7 +35,8 @@ export const connectSocket = () => {
 export const disconnectSocket = () => {
   if (socket.connected) {
     stopListeningOnlineUsers();
-    listenersRegistered = false; 
+    stopListeningMessageStatus();
+    listenersRegistered = false;
     socket.disconnect();
   }
 };

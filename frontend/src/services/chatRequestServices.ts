@@ -1,5 +1,4 @@
 import {
-  serachUser,
   addRequestApi,
   outgoingRequestApi,
   acceptRequestApi,
@@ -8,10 +7,6 @@ import {
   cancelRequestApi,
 } from "@/api/chatRequestApi";
 
-export const getPublicUsers = async (phone: string) => {
-  const res = await serachUser(phone);
-  return res.data;
-};
 
 export const sendRequest = async (senderId: string, receiverId: string) => {
   const res = await addRequestApi(senderId, receiverId);

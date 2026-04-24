@@ -26,18 +26,28 @@ export const sendDelivered = (data: any) => {
   socket.emit("message_delivered", data);
 };
 
-export const sendSeen = (data: any) => {
+export const sendSeen = (data: {
+  conversationId: string;
+  userId: string;
+  lastSeenMessageId: string;
+}) => {
   socket.emit("message_seen", data);
 };
 
 export const listenMessageStatus = () => {
   socket.off("message_status_updated");
-  socket.on("message_status_updated", (data) => {
+  socket.on("message_status_updated", (data) => {    
     useChatStore
       .getState()
-      .updateMessageStatus(data.messageId, data.status, data.seenBy);
+      .updateMessageStatus(
+        data.conversationId,
+        data.status,
+        data.lastSeenMessageId,
+        data.userId,
+        data.messageId,
+      );
   });
-};;
+};
 
 export const stopListeningMessageStatus = () => {
   socket.off("message_status_updated");

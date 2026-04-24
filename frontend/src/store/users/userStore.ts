@@ -7,7 +7,6 @@ interface UserStoreState {
   outgoingRequests: outgoingRequestI[];
   setUsers: (users: UserInterface[]) => void;
   setOutgoingRequests: (requests: outgoingRequestI[]) => void;
-  addOutgoingRequest: (receiverId: string) => void;
 }
 
 export const useUserStore = create<UserStoreState>((set) => ({
@@ -15,11 +14,4 @@ export const useUserStore = create<UserStoreState>((set) => ({
   outgoingRequests: [],
   setUsers: (users) => set({ users }),
   setOutgoingRequests: (requests) => set({ outgoingRequests: requests }),
-  addOutgoingRequest: (receiverId) =>
-    set((state) => ({
-      outgoingRequests: [
-        ...state.outgoingRequests,
-        { receiver_id: receiverId } as unknown as outgoingRequestI,
-      ],
-    })),
 }));

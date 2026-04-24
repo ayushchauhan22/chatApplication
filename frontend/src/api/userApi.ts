@@ -13,3 +13,4 @@ export const searchUserByNameApi = (name: string) =>
 // ← new: update logged-in user's name
 export const updateUserApi = (name: string) =>
   api.put("/users/profile", { name });
+

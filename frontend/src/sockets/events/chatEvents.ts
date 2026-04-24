@@ -51,4 +51,11 @@ export const removeRequestAcceptedListener = () => {
   socket.off("request_accepted");
 };
 
+export const listenNewChatRequest = (onNewRequest: () => void) => {
+  socket.off("new_chat_request");
+  socket.on("new_chat_request", onNewRequest);
+};
 
+export const stopListeningNewChatRequest = () => {
+  socket.off("new_chat_request");
+};

@@ -16,6 +16,7 @@ import conversation from './routes/conversationRoutes';
 import chatRequest from './routes/chatRequestRoutes';
 import message from './routes/messageRoutes';
 import connectDB from './config/db';
+import { getSwaggerDocument } from './swagger/swagger';
 import logger from './utils/logger';
 
 const app = express();
@@ -36,7 +37,6 @@ app.use(cookieParser());
 app.use(cors({ origin: process.env.URL, credentials: true }));
 app.use(express.json());
 
-import { getSwaggerDocument } from './swagger/swagger';
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(getSwaggerDocument()));
 
 app.use((req, res, next) => {

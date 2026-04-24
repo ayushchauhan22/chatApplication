@@ -1,6 +1,6 @@
 import { useUserStore } from "@/store/users/userStore";
 import { userAuthStore } from "@/store/auth/authStore";
-import { sendRequest } from "@/services/chatRequestServices";
+import { getOutgoingRequests, sendRequest } from "@/services/chatRequestServices";
 import { useChatStore } from "@/store/chat/chatStore";
 import type { ConversationInterface } from "@/interfaces/conversationInterfaces";
 import usePublicUsers from "@/hooks/useSerachUsers";
@@ -15,13 +15,13 @@ interface Props { searchName: string; }
 
 function UserSearchResults({ searchName }: Props) {
     const { user } = userAuthStore();
-    const { users, outgoingRequests, addOutgoingRequest } = useUserStore();
+    const { users, outgoingRequests,setOutgoingRequests } = useUserStore();
     const { conversations, setActiveConversation } = useChatStore();
 
     usePublicUsers(searchName);
-
+    
     const isRequested = (userId: string) =>
-        outgoingRequests.some((req: outgoingRequestI) => req.receiver_id === userId);
+        outgoingRequests.some((req: outgoingRequestI) => req.receiver_id._id === userId);
 
     const getConversation = (userId: string) =>
         conversations?.find((conv: ConversationInterface) =>
@@ -32,7 +32,8 @@ function UserSearchResults({ searchName }: Props) {
         if (!user?._id) return;
         try {
             await sendRequest(user._id, receiverId);
-            addOutgoingRequest(receiverId);
+            const requestsData = await getOutgoingRequests(String(user?._id));
+            setOutgoingRequests(requestsData);
             toast.success("Request sent");
         } catch (err: any) {
             toast.error(err?.response?.data?.message || "Failed to send request");
@@ -44,6 +45,8 @@ function UserSearchResults({ searchName }: Props) {
         if (conversation) setActiveConversation(conversation);
     };
 
+    
+    
     if (users.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center h-40 text-center space-y-2">
@@ -63,7 +66,7 @@ function UserSearchResults({ searchName }: Props) {
                 const initials = u.name?.slice(0, 2).toUpperCase();
                 const conversation = getConversation(String(u._id));
                 const connected = !!conversation;
-                const requested = isRequested(String(u._id));
+                
 
                 return (
                     <div
@@ -73,7 +76,6 @@ function UserSearchResults({ searchName }: Props) {
                             ${connected ? "hover:bg-accent cursor-pointer" : "cursor-default"}`}
                     >
                         <div className="flex items-center gap-2.5 min-w-0">
-                            {/* compact avatar — w-9 not w-16 */}
                             <div className="w-9 h-9 bg-primary rounded-lg flex items-center justify-center text-primary-foreground font-bold text-sm shrink-0">
                                 {initials}
                             </div>
@@ -83,12 +85,11 @@ function UserSearchResults({ searchName }: Props) {
                             </div>
                         </div>
 
-                        {/* compact badge/button — not h-14 */}
                         {connected ? (
                             <Badge className="text-xs px-2 h-6 font-medium shrink-0 ml-2">
                                 Message
                             </Badge>
-                        ) : requested ? (
+                        ) : isRequested(String(u._id)) ? (
                             <Badge variant="secondary" className="text-xs px-2 h-6 font-medium shrink-0 ml-2 text-muted-foreground">
                                 Pending
                             </Badge>

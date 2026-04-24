@@ -1,6 +1,7 @@
 import { Server } from 'socket.io';
 import { onlineUsers } from './connection.socket';
 
+
 export const emitGroupUpdated = (
   io: Server,
   participants: any[],
@@ -43,7 +44,7 @@ export const emitRequestAccepted = (
   receiverId: string,
   conversation: any,
 ) => {
-  const senderSocketId = onlineUsers.get(senderId);
+  const senderSocketId = onlineUsers.get(senderId);  
   if (senderSocketId) {
     io.to(senderSocketId).emit('request_accepted', {
       receiverId,
@@ -51,10 +52,8 @@ export const emitRequestAccepted = (
     });
   }
 
-  const receiverSocketId = onlineUsers.get(receiverId);
-  if (receiverSocketId) {
-    io.to(receiverSocketId).emit('conversation_added', { conversation });
-  }
+  emitConversationAdded(io, receiverId, conversation);
+
 };
 
 export const emitConversationDeleted = (

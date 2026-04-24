@@ -5,13 +5,22 @@ export interface SeenBy {
   seenAt: string;
 }
 
+export interface SeenByDetail {
+  user: {
+    _id: string;
+    name: string;
+  };
+  seenAt: string;
+}
+
 export interface MessageStatusInterface {
-  _id?: string; 
+  _id?: string;
   message_id?: string;
   status: "sent" | "delivered" | "seen";
-  seenBy: SeenBy[];
+  seenBy?: SeenBy[];
   deliveredAt?: string;
   seenAt?: string;
+  lastSeenMessageId?: string | null;
 }
 
 export interface MessageInterface {
@@ -24,4 +33,9 @@ export interface MessageInterface {
   uploadId?: string | null;
   messageStatus?: MessageStatusInterface | null;
   filename: string;
+}
+
+export interface MessageInfoModalProps {
+  messageId: string | null;
+  onClose: () => void;
 }

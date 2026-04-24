@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { getUsersByName } from "@/services/userServices"; // ← was chatRequestServices
+import { getUsersByName } from "@/services/userServices"; 
 import { getOutgoingRequests } from "@/services/chatRequestServices";
 import { userAuthStore } from "@/store/auth/authStore";
 import { useUserStore } from "@/store/users/userStore";

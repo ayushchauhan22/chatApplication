@@ -1,8 +1,5 @@
 import api from "./axios";
 
-export const serachUser = (phone: string) => {
-  return api.get(`/users/search?phone=${phone}`);
-};
 
 export const addRequestApi = (senderId: string, receiverId: string) => {
   return api.post("/chat-requests/send-request", {
@@ -27,5 +24,6 @@ export const rejectRequestApi = (requestId: string) => {
   return api.put(`/chat-requests/reject/${requestId}`);
 };
 
-export const cancelRequestApi = (requestId: string) =>
-  api.put(`/chat-requests/cancel/${requestId}`);
+export const cancelRequestApi = (requestId: string) =>{
+  return api.put(`/chat-requests/cancel/${requestId}`);
+};

@@ -10,6 +10,7 @@ import {
 } from '../services/messageService';
 import { findConversationByIdRaw } from '../services/conversationService';
 import Message from '../modelsDB/message'
+import { getSeenByForMessage } from '../services/messageService';
 
 export const getMessages = async (req: Request, res: Response) => {
   const { conversationId } = req.params;
@@ -32,22 +33,6 @@ export const getMessages = async (req: Request, res: Response) => {
     page,
   });
 };
-// export const sendMessage = async (req: Request, res: Response) => {
-//   const result = messageSchema.safeParse({
-//     params: req.params,
-//     body: req.body,
-//   });
-
-//   if (!result.success) {
-//     return res.status(400).json({ message: 'Invalid message data' });
-//   }
-
-//   const { conversationId } = req.params as { conversationId: string };
-//   const { text, senderId, fileUrl } = result.data.body;
-
-//   const message = await createMessage(conversationId, text ?? null, senderId, fileUrl ?? null);
-//   res.status(201).json(message);
-// };
 
 export const editMessage = async (req: Request, res: Response) => {
   const result = edditMessageSchema.safeParse({
@@ -75,7 +60,6 @@ export const deleteMessage = async (req: Request, res: Response) => {
   const message = await Message.findById(messageID);
   if (!message) return res.status(404).json({ message: 'Message not found' });
 
-  // only sender can delete
   if (message.sender.toString() !== userId) {
     return res
       .status(403)
@@ -84,7 +68,6 @@ export const deleteMessage = async (req: Request, res: Response) => {
 
   await softDeleteMessage(String(messageID));
 
-  // notify all in conversation
   io.to(message.conversation_id.toString()).emit('message_deleted', {
     messageId: messageID,
     conversationId: message.conversation_id.toString(),
@@ -93,3 +76,21 @@ export const deleteMessage = async (req: Request, res: Response) => {
   res.json({ message: 'Message deleted' });
 };
 
+
+
+export const getMessageSeenBy = async (req: Request, res: Response) => {
+  const { messageId } = req.params;
+
+  const message = await Message.findById(messageId).lean();
+  if (!message) {
+    return res.status(404).json({ message: 'Message not found' });
+  }
+
+  const requestingUserId = req.body.decoded?.Id;
+  if (message.sender.toString() !== requestingUserId) {
+    return res.status(403).json({ message: 'Not authorized' });
+  }
+
+  const seenBy = await getSeenByForMessage(String(messageId));
+  return res.json({ seenBy });
+};
