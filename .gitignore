@@ -5,3 +5,9 @@ frontend/node_modules/
 .env
 backend/.env
 frontend/.env
+# Ignore log files and debug files
+*.log
+*.debug
+# Ignore build artifacts
+dist/
+build/

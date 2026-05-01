@@ -1,0 +1,14 @@
+config:
+  target: "http://localhost:5000"
+  phases:
+    - duration: 5
+      arrivalRate: 150   # push all users quickly
+
+scenarios:
+  - engine: socketio
+    flow:
+      - think: 30   # 👈 keep users connected for 30 sec
+      - emit:
+          channel: "send_message"
+          data:
+            message: "test"

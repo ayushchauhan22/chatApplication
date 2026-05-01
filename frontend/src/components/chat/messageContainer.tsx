@@ -28,7 +28,6 @@ function MessageContainer() {
     const [text, setText] = useState("");
     const bottomRef = useRef<HTMLDivElement>(null);
     const [confirmDelete, setConfirmDelete] = useState<{ type: "message" | "conversation"; id: string } | null>(null);
-    // State for Message Info modal — holds the message ID whose seen-by info to show
     const [infoMessageId, setInfoMessageId] = useState<string | null>(null);
 
     const { fileInputRef, selectedFile, uploading, uploadProgress, handleFileSelect, clearFile, uploadAndSend } = useFileUpload(activeConversation?._id ?? "", user?._id ?? "");
@@ -46,8 +45,6 @@ function MessageContainer() {
         return () => { removeMessageListener(); };
     }, []);
 
-    // Track the last messageId we already sent a "seen" for, per conversation.
-    // This prevents re-firing when the messages array updates due to status events.
     const lastSentSeenRef = useRef<Record<string, string>>({});
 
     useEffect(() => {
@@ -61,8 +58,7 @@ function MessageContainer() {
                 String(msg.sender ?? "") === user._id;
             if (isSender) return false;
 
-            // Group: status flips to "seen" when anyone reads it, but each
-            // member needs to be checked individually via seenBy
+
             if (activeConversation.is_group) {
                 const iSeenIt = msg.messageStatus?.seenBy?.some(
                     s => String(s.user_id ?? "") === user._id

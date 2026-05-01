@@ -30,7 +30,6 @@ export const registerChatEvents = (io: Server, socket: Socket) => {
         filename,
       );
 
-      // check if any receiver is online and mark as delivered first
       const conversation = await Conversation.findById(conversationId);
       if (!conversation) return;
 
@@ -42,7 +41,7 @@ export const registerChatEvents = (io: Server, socket: Socket) => {
         onlineUsers.has(id),
       );
 
-      console.log(message);
+      
       
 
       // mark as delivered and notify sender
