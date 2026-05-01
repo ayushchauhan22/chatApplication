@@ -48,4 +48,8 @@ const messageStatusSchema = new mongoose.Schema(
   },
 );
 
+messageStatusSchema.index({ message_id: 1 }, { unique: true });
+messageStatusSchema.index({ conversation_id: 1, status: 1 });
+messageStatusSchema.index({ sender_id: 1, status: 1, conversation_id: 1 });
+
 export default mongoose.model("MessageStatus", messageStatusSchema);

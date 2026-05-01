@@ -1,6 +1,5 @@
 import { Server, Socket } from 'socket.io';
 import { findUserConversations } from '../services/conversationService';
-import { updateMessageDelivered } from '../services/messageService';
 import MessageStatus from '../modelsDB/messageStatus';
 
 export const onlineUsers = new Map<string, string>();
@@ -11,6 +10,11 @@ export const registerConnectionEvents = (io: Server, socket: Socket) => {
     onlineUsers.set(userId, socket.id);
 
     const conversations = await findUserConversations(userId);
+    const conversationIds = conversations.map((conv) => conv._id.toString());
+
+    conversationIds.forEach((conversationId) => {
+      socket.join(conversationId);
+    });
 
     const participantIds = new Set<string>();
     conversations.forEach((conv) => {
@@ -37,27 +41,32 @@ export const registerConnectionEvents = (io: Server, socket: Socket) => {
 
     // When user comes online, mark all undelivered messages as delivered
     // and notify each sender with a complete payload the frontend can use.
-    for (const conv of conversations) {
-      const pendingStatuses = await MessageStatus.find({
-        conversation_id: conv._id,
-        status: 'sent',
-        sender_id: { $ne: userId },
-      });
+    const pendingStatuses = await MessageStatus.find({
+      conversation_id: { $in: conversationIds },
+      status: 'sent',
+      sender_id: { $ne: userId },
+    }).select('message_id sender_id conversation_id');
 
-      for (const status of pendingStatuses) {
-        await updateMessageDelivered(status.message_id.toString());
+    const pendingMessageIds = pendingStatuses.map((status) => status.message_id);
 
-        const senderSocketId = onlineUsers.get(status.sender_id.toString());
-        if (senderSocketId) {
-          io.to(senderSocketId).emit('message_status_updated', {
-            messageId: status.message_id,
-            conversationId: conv._id.toString(),
-            status: 'delivered',
-            lastSeenMessageId: status.message_id.toString(),
-          });
-        }
-      }
+    if (pendingMessageIds.length > 0) {
+      await MessageStatus.updateMany(
+        { message_id: { $in: pendingMessageIds }, status: 'sent' },
+        { $set: { status: 'delivered', deliveredAt: new Date() } },
+      );
     }
+
+    pendingStatuses.forEach((status) => {
+      const senderSocketId = onlineUsers.get(status.sender_id.toString());
+      if (senderSocketId) {
+        io.to(senderSocketId).emit('message_status_updated', {
+          messageId: status.message_id,
+          conversationId: status.conversation_id.toString(),
+          status: 'delivered',
+          lastSeenMessageId: status.message_id.toString(),
+        });
+      }
+    });
   });
 
   socket.on('disconnect', async () => {

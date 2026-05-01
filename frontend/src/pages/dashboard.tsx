@@ -1,9 +1,14 @@
 import Sidebar from "../components/layout/sidebar/sidebar";
 import MessageContainer from "../components/chat/messageContainer";
 import { useConversation } from "@/hooks/useConversation";
+import { useEffect } from "react";
 
 function Home() {
-    useConversation();
+    const { fetchConversations } = useConversation();
+
+    useEffect(() => {
+        fetchConversations();
+    }, [fetchConversations]);
 
     return (
         <div className="flex h-screen w-screen bg-background text-foreground">

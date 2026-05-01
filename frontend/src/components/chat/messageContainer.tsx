@@ -2,7 +2,7 @@ import { useMessages } from "@/hooks/useMessages";
 import { userAuthStore } from "@/store/auth/authStore";
 import { useChatStore } from "@/store/chat/chatStore";
 import { useEffect, useRef, useState } from "react";
-import { listenMessages, removeMessageListener, sendMessageSocket } from "@/sockets/events/chatEvents";
+import { listenMessageAck, listenMessages, removeMessageAckListener, removeMessageListener, sendMessageSocket } from "@/sockets/events/chatEvents";
 import type { UserInterface } from "@/interfaces/userInterfaces";
 import type { MessageInterface } from "@/interfaces/messageInterfaces";
 import { useFileUpload } from "@/hooks/useFileUpload";
@@ -42,7 +42,11 @@ function MessageContainer() {
 
     useEffect(() => {
         listenMessages();
-        return () => { removeMessageListener(); };
+        listenMessageAck();
+        return () => {
+            removeMessageListener();
+            removeMessageAckListener();
+        };
     }, []);
 
     const lastSentSeenRef = useRef<Record<string, string>>({});
@@ -96,7 +100,28 @@ function MessageContainer() {
         if (!text.trim() && !selectedFile) return;
         if (!activeConversation) return;
         if (selectedFile) { await uploadAndSend(text); setText(""); return; }
-        sendMessageSocket({ conversationId: activeConversation._id, content: text.trim(), senderId: user?._id });
+
+        const clientTempId = `tmp-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+        useChatStore.getState().addOptimisticMessage({
+            _id: clientTempId,
+            clientTempId,
+            sender: user as any,
+            conversation_id: activeConversation._id,
+            content: text.trim(),
+            createdAt: new Date().toISOString(),
+            fileUrl: null,
+            uploadId: null,
+            filename: "",
+            isOptimistic: true,
+            messageStatus: { status: "sent" },
+        });
+
+        sendMessageSocket({
+            conversationId: activeConversation._id,
+            content: text.trim(),
+            senderId: user?._id,
+            clientTempId,
+        });
         setText("");
     };
 

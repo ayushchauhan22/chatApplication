@@ -3,7 +3,6 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useConversation } from "@/hooks/useConversation";
 import { userAuthStore } from "../../store/auth/authStore";
 import { useChatRequestStore } from "../../store/chat/chatRequestStore";
 import { cancelRequest } from "@/services/chatRequestServices";
@@ -11,14 +10,11 @@ import { MessageSquarePlus, Inbox, Clock } from "lucide-react";
 
 export default function RequestsModal({ open, setOpen }: any) {
     const { user } = userAuthStore();
-    const { fetchConversations } = useConversation();
     const { incoming, outgoing, fetchIncoming, fetchOutgoing, accept, reject } = useChatRequestStore();
 
     useEffect(() => {
         if (open && user?._id) { fetchIncoming(user._id); fetchOutgoing(user._id); }
     }, [open, user]);
-
-    useEffect(() => { fetchConversations(); }, [incoming.length, outgoing.length]);
 
     const getInitials = (name: string) => {
         if (!name) return "??";

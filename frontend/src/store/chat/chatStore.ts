@@ -10,6 +10,7 @@ interface ChatState {
   setConversations: (conversations: Conversation[]) => void;
   setActiveConversation: (conversation: Conversation | null) => void;
   setMessages: (msgs: MessageInterface[]) => void;
+  addOptimisticMessage: (msg: MessageInterface) => void;
   addMessage: (msg: MessageInterface) => void;
   addConversation: (conv: Conversation) => void;
   updateActiveConversation: (conv: Conversation) => void;
@@ -37,6 +38,11 @@ export const useChatStore = create<ChatState>((set) => ({
     set({ activeConversation: conversation }),
 
   setMessages: (msgs: any) => set({ messages: msgs }),
+
+  addOptimisticMessage: (msg) =>
+    set((state) => ({
+      messages: [...state.messages, msg],
+    })),
 
   addConversation: (conv) =>
     set((state) => ({ conversations: [conv, ...state.conversations] })),
@@ -146,6 +152,7 @@ export const useChatStore = create<ChatState>((set) => ({
     set((state) => {
       const convId = String(msg.conversation_id ?? "");
       const msgId = String(msg._id ?? "");
+      const clientTempId = String(msg.clientTempId ?? "");
       const isActive = state.activeConversation?._id === convId;
 
       const updatedConversations = state.conversations.map((conv) => {
@@ -165,6 +172,17 @@ export const useChatStore = create<ChatState>((set) => ({
       });
 
       if (!isActive) return { conversations: sorted };
+
+      if (clientTempId) {
+        const optimisticIndex = state.messages.findIndex(
+          (m) => String(m.clientTempId ?? "") === clientTempId,
+        );
+        if (optimisticIndex > -1) {
+          const nextMessages = [...state.messages];
+          nextMessages[optimisticIndex] = msg;
+          return { messages: nextMessages, conversations: sorted };
+        }
+      }
 
       const alreadyExists = state.messages.some(
         (m) => String(m._id ?? "") === msgId,

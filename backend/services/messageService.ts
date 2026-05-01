@@ -1,4 +1,3 @@
-import Conversation from '../modelsDB/conversation';
 import MessageStatus from '../modelsDB/messageStatus';
 import Message from '../modelsDB/message';
 
@@ -10,9 +9,6 @@ export const createMessage = async (
   uploadId: string | null,
   filename: string,
 ) => {
-  const conversation = await Conversation.findById(conversationId);
-  if (!conversation) throw new Error('Conversation not found');
-
   const message = new Message({
     content: text,
     sender: senderId,
@@ -55,7 +51,9 @@ export const getMessagesByConversation = async (
     .limit(limit);
 
   const reversed = messages.reverse();
+  const pageMessageIds = reversed.map((msg) => msg._id);
   const statuses = await MessageStatus.find({
+    message_id: { $in: pageMessageIds },
     conversation_id: conversationId,
   });
   const statusMap = new Map(statuses.map((s) => [s.message_id.toString(), s]));

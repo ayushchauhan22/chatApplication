@@ -33,6 +33,8 @@ export interface MessageInterface {
   uploadId?: string | null;
   messageStatus?: MessageStatusInterface | null;
   filename: string;
+  clientTempId?: string | null;
+  isOptimistic?: boolean;
 }
 
 export interface MessageInfoModalProps {

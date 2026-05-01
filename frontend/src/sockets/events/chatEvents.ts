@@ -31,6 +31,20 @@ export const removeMessageListener = () => {
   socket.off("receive_message");
 };
 
+export const listenMessageAck = () => {
+  const handler = (message: any) => {
+    const { addMessage } = useChatStore.getState();
+    addMessage(message);
+  };
+
+  socket.off("message_sent_ack");
+  socket.on("message_sent_ack", handler);
+};
+
+export const removeMessageAckListener = () => {
+  socket.off("message_sent_ack");
+};
+
 export const listenRequestAccepted = () => {
   socket.on("request_accepted", ({ receiverId, conversation }) => {
     const { outgoingRequests, setOutgoingRequests } = useUserStore.getState();

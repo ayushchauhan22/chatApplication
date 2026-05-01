@@ -32,7 +32,6 @@ function Sidebar() {
     const [editName, setEditName] = useState("");
     const [saving, setSaving] = useState(false);
 
-    useConversation();
     const debouncedName = useDebounce(searchInput.trim(), 1000);
 
     

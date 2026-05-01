@@ -15,11 +15,21 @@ export const registerChatEvents = (io: Server, socket: Socket) => {
 
   socket.on('send_message', async (data) => {
     try {
-      const { conversationId, content, senderId, fileUrl, uploadId, filename } =
-        data;
+      const {
+        conversationId,
+        content,
+        senderId,
+        fileUrl,
+        uploadId,
+        filename,
+        clientTempId,
+      } = data;
 
       if (!conversationId || !senderId) return;
       if (!content && !fileUrl) return;
+
+      const conversation = await Conversation.findById(conversationId);
+      if (!conversation) return;
 
       const message = await createMessage(
         conversationId,
@@ -29,9 +39,6 @@ export const registerChatEvents = (io: Server, socket: Socket) => {
         uploadId,
         filename,
       );
-
-      const conversation = await Conversation.findById(conversationId);
-      if (!conversation) return;
 
       const receivers = conversation.participants
         .map((p: any) => p.toString())
@@ -47,17 +54,19 @@ export const registerChatEvents = (io: Server, socket: Socket) => {
       // mark as delivered and notify sender
       if (anyReceiverOnline) {
         await updateMessageDelivered(message._id.toString());
-
-        socket.emit('message_status_updated', {
-          messageId: message._id,
-          conversationId,
-          status: 'delivered',
-          lastSeenMessageId: message._id.toString(),
-        });
+        if (message.messageStatus) {
+          message.messageStatus.status = 'delivered';
+          message.messageStatus.deliveredAt = new Date();
+        }
       }
 
-      //  broadcast message to receivers
-      io.to(conversationId).emit('receive_message', message);
+      const payload = {
+        ...message,
+        clientTempId: clientTempId ?? null,
+      };
+
+      socket.emit('message_sent_ack', payload);
+      io.to(conversationId).emit('receive_message', payload);
     } catch (error) {
       logger.error('Error sending message:', error);
       socket.emit('message_error', { error: 'Failed to send message' });
